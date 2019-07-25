@@ -1,0 +1,16 @@
+HELP.md
+target/
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**
+!**/src/test/**
+
+
+### IntelliJ IDEA ###
+.idea
+*.iml
+
+logs/
+src/main/resources/rebel.xml
+src/main/resources/application-dev.yml
+
+src/test/**/Test*.java

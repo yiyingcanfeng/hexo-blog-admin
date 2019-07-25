@@ -1,0 +1,78 @@
+server:
+  port: 8866
+
+config:
+  # 特殊字符要用""包起来
+  # 配置 Access-Control-Allow-Origin 允许的域名
+  corsDomain: "*"
+  # 上传路径
+  uploadPath: /
+
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3310/hexo-blog?useUnicode=true&characterEncoding=utf-8&allowMultiQueries=true&useSSL=false&serverTimezone=GMT%2B8&allowPublicKeyRetrieval=true
+    username: root
+    password: 1111
+    druid:
+      initialSize: 5
+      minIdle: 5
+      maxActive: 20
+      maxWait: 60000
+      timeBetweenEvictionRunsMillis: 60000
+      minEvictableIdleTimeMillis: 300000
+      validationQuery: SELECT 1
+      testWhileIdle: true
+      testOnBorrow: true
+      testOnReturn: false
+      poolPreparedStatements: true
+      maxPoolPreparedStatementPerConnectionSize: 20
+      filters: stat,wall
+      connectionProperties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000
+      stat-view-servlet:
+        allow: 127.0.0.1
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    joda-date-time-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 100MB
+  mvc:
+    servlet:
+      load-on-startup: 1
+  redis:
+    host: localhost
+    port: 6379
+    database: 0
+    # password:
+  mail:
+    default-encoding: UTF-8
+    host: smtp.qq.com
+    username:
+    password:
+    protocol: smtp
+    test-connection: false
+    port: 465
+    properties:
+      mail:
+        smtp:
+          starttls:
+            auth: true
+            enable: true
+            required: true
+
+  resources:
+    static-locations: file:./static/
+mybatis:
+  mapper-locations: classpath:/mybatis-mappers/*
+  configuration:
+    mapUnderscoreToCamelCase: true
+pagehelper:
+  # 数据库
+  helper-dialect: mysql
+  # 判断合理性比如负数和超过最大总数
+  reasonable: true
+  # 支持方法参数
+  support-methods-arguments: true

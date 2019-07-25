@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.movefeng.hexoblogadmin.dao.ArticleDao">
+
+    <!--批量插入文章-->
+    <insert id="insertArticleBatch">
+        insert into article (title, create_time)
+        values
+        <foreach collection="list" item="item" index="index" separator=",">
+            (#{item.title},#{item.createTime})
+        </foreach>
+    </insert>
+    <!--批量删除文章-->
+    <delete id="deleteBatch">
+        delete from article where title in
+        <foreach collection="list" item="item" index="index" separator="," open="(" close=")">
+            #{item.title}
+        </foreach>
+    </delete>
+    <!--查询所有文章，包含评论数信息-->
+    <select id="selectArticleVOList" resultType="com.movefeng.hexoblogadmin.vo.ArticleVO">
+        select *
+        from
+        (
+        select article.*,
+        count(`comment`.id) as commentCount
+        from article
+        left join `comment` on `comment`.article_id = article.id
+        where 0 = 0
+        <if test="param.searchTitle != null and param.searchTitle != ''">
+            and article.title like concat('%',#{param.searchTitle},'%')
+        </if>
+        <if test="param.searchDatetimeStart != null and param.searchDatetimeStart != ''">
+            and comment.create_time &gt; #{param.searchDatetimeStart}
+        </if>
+        <if test="param.searchDatetimeEnd != null and param.searchDatetimeEnd != ''">
+            and comment.create_time &lt; #{param.searchDatetimeEnd}
+        </if>
+        group by article.id
+        order by article.create_time desc
+        ) a
+        where 0 = 0
+        <if test="param.searchCommentCount != null and param.searchCommentCount != ''">
+            and commentCount = #{param.searchCommentCount}
+        </if>
+    </select>
+
+</mapper>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.movefeng.hexoblogadmin.dao.UserDao">
+
+    <!--新增用户-->
+    <insert id="insertUser" useGeneratedKeys="true" keyProperty="id">
+        insert into user (name, email, website) values (#{name},#{email},#{website})
+    </insert>
+
+    <!--查询所有用户,带模糊查询-->
+    <select id="selectUserAll" resultType="com.movefeng.hexoblogadmin.model.User">
+        select *
+        from user
+        where 0 = 0
+        <if test="param.searchUsername != null and param.searchUsername != ''">
+            and name like concat('%',#{param.searchUsername},'%')
+        </if>
+        <if test="param.searchEmail != null and param.searchEmail != ''">
+            and email like concat('%',#{param.searchEmail},'%')
+        </if>
+    </select>
+</mapper>
