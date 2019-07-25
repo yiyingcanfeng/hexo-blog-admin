@@ -6,6 +6,14 @@
 
 [后台管理demo](http://118.25.83.223/admin)
 
+## 截图
+
+![screenshoot/1.png](https://raw.githubusercontent.com/yiyingcanfeng/hexo-blog-admin/master/screenshoot/1.png)
+![screenshoot/2.png](https://raw.githubusercontent.com/yiyingcanfeng/hexo-blog-admin/master/screenshoot/2.png)
+![screenshoot/3.png](https://raw.githubusercontent.com/yiyingcanfeng/hexo-blog-admin/master/screenshoot/3.png)
+![screenshoot/4.png](https://raw.githubusercontent.com/yiyingcanfeng/hexo-blog-admin/master/screenshoot/4.png)
+![screenshoot/5.png](https://raw.githubusercontent.com/yiyingcanfeng/hexo-blog-admin/master/screenshoot/5.png)
+
 ## 技术栈
 
 ### 前端
@@ -164,6 +172,8 @@ location /blog/api/ {
 - 评论邮件通知
 
 ## 相关项目
+[hexo-theme-yilia](https://github.com/yiyingcanfeng/hexo-theme-yilia)
+
 [vue-element-admin](https://github.com/PanJiaChen/vue-element-admin)
 
 [vue-admin-template](https://github.com/PanJiaChen/electron-vue-admin)
