@@ -1,10 +1,42 @@
 package com.movefeng.hexoblogadmin.utils;
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Base64;
 
+@Slf4j
 public class EncryptUtils {
+
+    /**
+     * base64加密
+     *
+     * @param value value
+     * @return
+     */
+    public static String base64Encode(String value) {
+        byte[] encodedCookieBytes = Base64.getEncoder().encode(value.getBytes());
+        return new String(encodedCookieBytes);
+    }
+
+    /**
+     * base64解密
+     *
+     * @param base64Value base64Value
+     * @return
+     */
+    public static String base64Decode(String base64Value) {
+        try {
+            byte[] decodedCookieBytes = Base64.getDecoder().decode(base64Value);
+            return new String(decodedCookieBytes);
+        } catch (Exception ex) {
+            log.debug("Unable to Base64 decode value: " + base64Value);
+            return null;
+        }
+    }
+
     /**
      * SHA-256加密
      *
@@ -29,7 +61,7 @@ public class EncryptUtils {
      * 对字符串md5加密
      *
      * @param str 传入要加密的字符串
-     * @return  MD5加密后的字符串
+     * @return MD5加密后的字符串
      */
     public static String MD5(String str) {
         try {
