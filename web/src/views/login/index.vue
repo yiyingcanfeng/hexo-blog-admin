@@ -45,7 +45,7 @@
 
       <div class="tips">
         <!--<span style="margin-right:20px;">用户名: admin</span>-->
-        <!--<span> 密码: 任意</span>-->
+        <!--<span> 密码: 111111</span>-->
       </div>
 
     </el-form>
@@ -56,14 +56,13 @@
 import { validUsername } from '@/utils/validate'
 import { setAdminInfo, getAdminInfo } from '@/utils/auth'
 const md5 = require('js-md5')
-const { log } = console
 export default {
   name: 'Login',
   data() {
     // eslint-disable-next-line no-unused-vars
     const validateUsername = (rule, value, callback) => {
       if (!validUsername(value)) {
-        callback(new Error('Please enter the correct user name'))
+        callback(new Error('请输入正确的用户名'))
       } else {
         callback()
       }
