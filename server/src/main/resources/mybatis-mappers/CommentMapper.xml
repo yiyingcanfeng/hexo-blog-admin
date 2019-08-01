@@ -131,6 +131,9 @@
         <if test="param.searchDatetimeEnd != null and param.searchDatetimeEnd != ''">
             and comment.create_time &lt; #{param.searchDatetimeEnd}
         </if>
+        <if test="param.searchUsername != null and param.searchUsername != ''">
+            and user.name like concat('%', #{param.searchUsername}, '%')
+        </if>
         ) a
         left join user
         on replyUserId = user.id

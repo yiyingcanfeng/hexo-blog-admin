@@ -4,7 +4,8 @@
 
     <!--新增用户-->
     <insert id="insertUser" useGeneratedKeys="true" keyProperty="id">
-        insert into user (name, email, website) values (#{name},#{email},#{website})
+        insert into user (name, email, website)
+        values (#{name}, #{email}, #{website})
     </insert>
     <!--根据id批量删除用户-->
     <delete id="deleteBatchById">
@@ -15,15 +16,24 @@
     </delete>
 
     <!--查询所有用户,带模糊查询-->
-    <select id="selectUserAll" resultType="com.movefeng.hexoblogadmin.model.User">
-        select *
+    <select id="selectUserAll" resultType="com.movefeng.hexoblogadmin.vo.UserVO">
+        select * from
+        (
+        select user.*, count(comment.id) as commentCount
         from user
+        left join comment on comment.user_id = user.id
         where 0 = 0
         <if test="param.searchUsername != null and param.searchUsername != ''">
             and name like concat('%',#{param.searchUsername},'%')
         </if>
         <if test="param.searchEmail != null and param.searchEmail != ''">
             and email like concat('%',#{param.searchEmail},'%')
+        </if>
+        group by user.id
+        ) a
+        where 0 = 0
+        <if test="param.searchCommentCount != null and param.searchCommentCount != ''">
+            and commentCount = #{param.searchCommentCount}
         </if>
     </select>
 </mapper>

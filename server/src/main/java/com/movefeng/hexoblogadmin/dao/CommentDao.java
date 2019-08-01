@@ -59,7 +59,7 @@ public interface CommentDao {
     /**
      * 查询所有文章的评论,带模糊查询
      *
-     * @return
+     * @return param
      */
     Page<CommentVO> selectAllComments(@Param("param") Map<String, Object> param);
 
