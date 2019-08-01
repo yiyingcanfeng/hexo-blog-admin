@@ -27,6 +27,15 @@
         style="width: 10%"
         @clear="fetchData(currentPage,pageSize,searchForm)"
       />
+      <el-input
+        v-model="searchForm.searchCommentCount"
+        placeholder="请输入评论数"
+        clearable
+        size="medium"
+        type="text"
+        style="width: 8%"
+        @clear="fetchData(currentPage,pageSize,searchForm)"
+      />
       <el-button
         type="primary"
         size="small"
@@ -55,7 +64,14 @@
       </el-table-column>
       <el-table-column align="left" label="用户名">
         <template slot-scope="scope">
-          {{ scope.row.name }}
+          <router-link
+            tag="a"
+            :to="{ path: '/comment/list', query: { searchUsername: scope.row.name,immediateSearch:true }}"
+          >
+            <a>
+              {{ scope.row.name }}
+            </a>
+          </router-link>
         </template>
       </el-table-column>
       <el-table-column align="left" label="邮箱">
@@ -67,6 +83,18 @@
         <template slot-scope="scope">
           <a v-if="scope.row.website!==''" :href="'//'+scope.row.website">{{ scope.row.website }}</a>
           <span v-else>{{ scope.row.website }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column align="center" sortable prop="commentCount" label="评论数" width="90">
+        <template slot-scope="scope">
+          <router-link v-if="scope.row.commentCount !== 0" tag="a" :to="{ path: '/comment/list', query: { searchUsername: scope.row.name,immediateSearch:true }}">
+            <a>
+              {{ scope.row.commentCount }}
+            </a>
+          </router-link>
+          <span v-else>
+            {{ scope.row.commentCount }}
+          </span>
         </template>
       </el-table-column>
       <el-table-column align="center" label="操作" width="175">

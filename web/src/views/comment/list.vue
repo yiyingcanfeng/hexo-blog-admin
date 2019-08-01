@@ -197,6 +197,9 @@ export default {
     if (param.searchTitle) {
       this.searchForm.searchTitle = param.searchTitle
     }
+    if (param.searchUsername) {
+      this.searchForm.searchUsername = param.searchUsername
+    }
     if (param.immediateSearch) {
       this.fetchData(this.currentPage, this.pageSize, this.searchForm)
       return
