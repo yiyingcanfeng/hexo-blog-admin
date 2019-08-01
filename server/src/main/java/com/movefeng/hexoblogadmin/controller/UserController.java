@@ -47,7 +47,18 @@ public class UserController {
         }
         Page<User> page = userService.userList(searchParam);
         PageInfo<User> pageInfo = new PageInfo<>(page);
-        return new Result<>(Result.Code.SUCCESS,pageInfo);
+        return new Result<>(Result.Code.SUCCESS, pageInfo);
+    }
+
+    /**
+     * 根据id删除用户
+     *
+     * @param id
+     * @return
+     */
+    @RequestMapping("delete")
+    public Result delete(Integer id) {
+        return userService.delete(id);
     }
 
 }

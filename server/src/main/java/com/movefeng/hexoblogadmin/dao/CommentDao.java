@@ -4,10 +4,7 @@ import com.github.pagehelper.Page;
 import com.movefeng.hexoblogadmin.model.Comment;
 import com.movefeng.hexoblogadmin.vo.CommentVO;
 import com.movefeng.hexoblogadmin.vo.CommentVOs;
-import org.apache.ibatis.annotations.Delete;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Update;
+import org.apache.ibatis.annotations.*;
 
 import java.util.List;
 import java.util.Map;
@@ -92,7 +89,7 @@ public interface CommentDao {
     void auditBatch(List<Map<String, Object>> list);
 
     /**
-     * 批量删除评论
+     * 根据评论id批量删除评论
      *
      * @param idList
      */

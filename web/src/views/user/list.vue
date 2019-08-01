@@ -56,6 +56,11 @@
           <span v-else>{{ scope.row.website }}</span>
         </template>
       </el-table-column>
+      <el-table-column align="center" label="操作" width="175">
+        <template slot-scope="scope">
+          <el-button type="danger" :loading="operateLoading" @click="deleteUser(scope.row.id)">删除</el-button>
+        </template>
+      </el-table-column>
     </el-table>
     <el-pagination
       class="pagination"
@@ -82,6 +87,7 @@ export default {
       },
       listLoading: true,
       generateLoading: false,
+      operateLoading: false,
       currentPage: 1,
       pageSize: 10,
       searchForm: {
@@ -107,6 +113,31 @@ export default {
       }).then(response => {
         this.data = response.data
         this.listLoading = false
+      })
+    },
+    deleteUser(id) {
+      this.$confirm('确认操作？', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.operateLoading = true
+        request({
+          url: '/user/delete',
+          method: 'post',
+          params: {
+            id: id
+          }
+        }).then((response) => {
+          this.operateLoading = false
+          this.$message({
+            message: response.message,
+            type: 'success',
+            duration: 3 * 1000,
+            showClose: true
+          })
+          this.fetchData(this.currentPage, this.pageSize)
+        })
       })
     },
     handleSizeChange(val) {

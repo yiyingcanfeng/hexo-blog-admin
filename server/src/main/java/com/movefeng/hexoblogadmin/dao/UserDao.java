@@ -55,4 +55,11 @@ public interface UserDao {
      */
     Page<User> selectUserAll(@Param("param") Map<String, Object> param);
 
+    /**
+     * 根据id删除用户
+     * @param id
+     * @return
+     */
+    @Delete("delete from user where id = #{id}")
+    Integer deleteById(Integer id);
 }
