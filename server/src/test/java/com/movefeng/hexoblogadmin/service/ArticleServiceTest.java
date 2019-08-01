@@ -1,7 +1,9 @@
 package com.movefeng.hexoblogadmin.service;
 
+import com.github.pagehelper.Page;
 import com.movefeng.hexoblogadmin.model.Article;
 import com.movefeng.hexoblogadmin.model.SystemConfig;
+import com.movefeng.hexoblogadmin.vo.ArticleVO;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.FileFilterUtils;
@@ -18,10 +20,7 @@ import javax.annotation.Resource;
 import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 import static org.junit.Assert.*;
 
@@ -61,5 +60,12 @@ public class ArticleServiceTest {
         }
         articleService.updateArticleBatch(articleList);
         log.error("修改成功！");
+    }
+
+    @Test
+    public void queryArticle() {
+        HashMap<String, Object> hashMap = new HashMap<>();
+        Page<ArticleVO> articleVOS = articleService.queryArticle(hashMap);
+        log.info(articleVOS+"");
     }
 }
