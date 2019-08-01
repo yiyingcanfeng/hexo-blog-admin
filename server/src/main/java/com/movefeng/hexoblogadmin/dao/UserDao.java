@@ -57,9 +57,17 @@ public interface UserDao {
 
     /**
      * 根据id删除用户
+     *
      * @param id
      * @return
      */
     @Delete("delete from user where id = #{id}")
     Integer deleteById(Integer id);
+
+    /**
+     * 根据id批量删除用户
+     *
+     * @param idList
+     */
+    void deleteBatchById(List idList);
 }

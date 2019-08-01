@@ -61,4 +61,15 @@ public class UserController {
         return userService.delete(id);
     }
 
+    /**
+     * 根据id批量删除用户
+     *
+     * @param map
+     * @return
+     */
+    @RequestMapping("deleteBatch")
+    public Result deleteBatch(@RequestBody Map<String, Object> map) {
+        return userService.deleteBatchById(map);
+    }
+
 }

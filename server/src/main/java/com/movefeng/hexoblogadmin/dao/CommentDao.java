@@ -95,4 +95,19 @@ public interface CommentDao {
      */
     void deleteBatchById(List idList);
 
+    /**
+     * 根据评论id批量删除评论
+     *
+     * @param userIdList
+     */
+    void deleteBatchByUserId(List userIdList);
+
+    /**
+     * 根据用户id删除该用户的评论
+     *
+     * @param userId
+     */
+    @Delete("delete from comment where user_id = #{userId}")
+    void deleteByUserId(Integer userId);
+
 }

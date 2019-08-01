@@ -6,6 +6,13 @@
     <insert id="insertUser" useGeneratedKeys="true" keyProperty="id">
         insert into user (name, email, website) values (#{name},#{email},#{website})
     </insert>
+    <!--根据id批量删除用户-->
+    <delete id="deleteBatchById">
+        delete from user where id in
+        <foreach collection="list" item="item" index="index" separator="," open="(" close=")">
+            #{item}
+        </foreach>
+    </delete>
 
     <!--查询所有用户,带模糊查询-->
     <select id="selectUserAll" resultType="com.movefeng.hexoblogadmin.model.User">

@@ -1,6 +1,14 @@
 <template>
   <div class="app-container">
     <div class="search-container">
+      <el-dropdown trigger="click">
+        <el-button type="primary" size="medium" :loading="batchOperateLoading">
+          批量操作<i class="el-icon-arrow-down el-icon--right"></i>
+        </el-button>
+        <el-dropdown-menu slot="dropdown">
+          <el-dropdown-item @click.native="deleteBatch">批量删除</el-dropdown-item>
+        </el-dropdown-menu>
+      </el-dropdown>
       <el-input
         v-model="searchForm.searchUsername"
         placeholder="请输入用户名"
@@ -34,7 +42,12 @@
       fit
       highlight-current-row
       style="width: 100%"
+      @selection-change="handleSelectionChange"
     >
+      <el-table-column
+        type="selection"
+        width="40"
+      />
       <el-table-column align="center" label="序号" width="50">
         <template slot-scope="scope">
           {{ scope.$index+1 }}
@@ -88,12 +101,14 @@ export default {
       listLoading: true,
       generateLoading: false,
       operateLoading: false,
+      batchOperateLoading: false,
       currentPage: 1,
       pageSize: 10,
       searchForm: {
         searchUsername: '',
         searchEmail: ''
-      }
+      },
+      multipleSelection: []
     }
   },
   mounted() {
@@ -116,7 +131,7 @@ export default {
       })
     },
     deleteUser(id) {
-      this.$confirm('确认操作？', '提示', {
+      this.$confirm('该用户相关的评论数据也将一并删除，是否确认操作？', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
@@ -140,6 +155,42 @@ export default {
         })
       })
     },
+    deleteBatch() {
+      if (this.multipleSelection.length === 0) {
+        this.$message({
+          message: '请选择要删除的数据！',
+          type: 'error',
+          duration: 3 * 1000,
+          showClose: true
+        })
+        return
+      }
+      this.$confirm('用户相关的评论数据也将一并删除，是否确认操作？？', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(_ => {
+        this.batchOperateLoading = true
+        request({
+          url: '/user/deleteBatch',
+          method: 'post',
+          data: {
+            id: this.multipleSelection.map(a => a.id)
+          }
+        }).then(response => {
+          this.batchOperateLoading = false
+          this.$message({
+            message: response.message,
+            type: 'success',
+            duration: 3 * 1000,
+            showClose: true
+          })
+          this.fetchData(this.currentPage, this.pageSize)
+        }).catch(() => {
+          this.batchOperateLoading = false
+        })
+      })
+    },
     handleSizeChange(val) {
       this.pageSize = val
       this.fetchData(this.currentPage, val)
@@ -147,6 +198,9 @@ export default {
     handleCurrentChange(val) {
       this.currentPage = val
       this.fetchData(val, this.pageSize)
+    },
+    handleSelectionChange(val) {
+      this.multipleSelection = val
     },
     searchComment() {
       this.fetchData(this.currentPage, this.pageSize, this.searchForm)

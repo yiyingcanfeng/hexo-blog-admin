@@ -40,6 +40,13 @@
             #{item}
         </foreach>
     </delete>
+    <!--根据user_id批量删除评论-->
+    <delete id="deleteBatchByUserId">
+        delete from comment where user_id in
+        <foreach collection="list" item="item" index="index" separator="," open="(" close=")">
+            #{item}
+        </foreach>
+    </delete>
     <!--根据文章标题查询所有审核通过的父级评论-->
     <select id="selectCommentByArticleTitle" resultMap="comments">
         select comment.id as commentId,

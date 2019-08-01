@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -48,6 +49,24 @@ public class UserService {
             return new Result(Result.Code.SUCCESS, "删除成功！");
         } else {
             return new Result(Result.Code.ERROR, "删除失败！");
+        }
+    }
+
+    /**
+     * 根据id批量删除用户
+     *
+     * @param map
+     * @return
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public Result deleteBatchById(Map<String, Object> map) {
+        if (map.get("id") != null && !"".equals(map.get("id"))) {
+            List idList = (List) map.get("id");
+            userDao.deleteBatchById(idList);
+            commentDao.deleteBatchByUserId(idList);
+            return new Result(Result.Code.SUCCESS, "操作成功！");
+        } else {
+            return new Result(Result.Code.ERROR, "参数不正确！");
         }
     }
 }
