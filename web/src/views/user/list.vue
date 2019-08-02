@@ -16,6 +16,7 @@
         size="medium"
         type="text"
         style="width: 10%"
+        @keyup.native="enterSearch(searchForm.searchUsername,$event)"
         @clear="fetchData(currentPage,pageSize,searchForm)"
       />
       <el-input
@@ -25,6 +26,7 @@
         size="medium"
         type="text"
         style="width: 10%"
+        @keyup.native="enterSearch(searchForm.searchEmail,$event)"
         @clear="fetchData(currentPage,pageSize,searchForm)"
       />
       <el-input
@@ -34,6 +36,7 @@
         size="medium"
         type="text"
         style="width: 8%"
+        @keyup.native="enterSearch(searchForm.searchCommentCount,$event)"
         @clear="fetchData(currentPage,pageSize,searchForm)"
       />
       <el-button
@@ -232,6 +235,12 @@ export default {
     },
     searchComment() {
       this.fetchData(this.currentPage, this.pageSize, this.searchForm)
+    },
+    enterSearch(message, event) {
+      // 捕获enter事件
+      if (event.keyCode === 13) {
+        this.fetchData(this.currentPage, this.pageSize, this.searchForm)
+      }
     }
   }
 }

@@ -12,6 +12,7 @@
         size="medium"
         type="text"
         style="width: 20%"
+        @keyup.native="enterSearch(searchForm.searchTitle,$event)"
         @clear="fetchData(currentPage,pageSize,searchForm)"
       />
       <el-input
@@ -21,6 +22,7 @@
         size="medium"
         type="text"
         style="width: 10%"
+        @keyup.native="enterSearch(searchForm.searchCommentCount,$event)"
         @clear="fetchData(currentPage,pageSize,searchForm)"
       />
       <el-date-picker
@@ -198,6 +200,12 @@ export default {
     },
     searchComment() {
       this.fetchData(this.currentPage, this.pageSize, this.searchForm)
+    },
+    enterSearch(message, event) {
+      // 捕获enter事件
+      if (event.keyCode === 13) {
+        this.fetchData(this.currentPage, this.pageSize, this.searchForm)
+      }
     }
   }
 }
