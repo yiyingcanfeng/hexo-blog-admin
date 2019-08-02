@@ -37,7 +37,7 @@
             and comment.create_time &lt; #{param.searchDatetimeEnd}
         </if>
         group by article.id
-        order by article.create_time desc
+        order by article.create_time, article.id desc
         ) a
         where 0 = 0
         <if test="param.searchCommentCount != null and param.searchCommentCount != ''">

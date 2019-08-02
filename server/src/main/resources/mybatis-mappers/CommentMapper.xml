@@ -61,6 +61,7 @@
           and reply_user_id = 0
           and comment.user_id = user.id
           and comment.audit_status = ${@com.movefeng.hexoblogadmin.model.Comment$AuditStatus@AUDIT_SUCCESS}
+        order by create_time, commentId desc
     </select>
     <!--查询某个评论下的所有审核通过的子评论-->
     <select id="selectChildComment" resultType="com.movefeng.hexoblogadmin.vo.CommentVO">
@@ -81,7 +82,8 @@
                    and comment.audit_status = ${@com.movefeng.hexoblogadmin.model.Comment$AuditStatus@AUDIT_SUCCESS}
              ) a,
              user
-        where a.reply_user_id = user.id;
+        where a.reply_user_id = user.id
+        order by a.create_time, a.id desc
     </select>
     <!--查询某个评论下的所有审核通过的子评论数-->
     <select id="selectChildCommentCount" resultType="int">
@@ -137,7 +139,7 @@
         ) a
         left join user
         on replyUserId = user.id
-        order by a.create_time desc
+        order by a.create_time,a.id desc
     </select>
 
     <resultMap id="comments" type="com.movefeng.hexoblogadmin.vo.CommentVOs">
