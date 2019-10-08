@@ -35,7 +35,7 @@ service.interceptors.response.use(
   /**
    * If you want to get http information such as headers or status
    * Please return  response => response
-  */
+   */
 
   /**
    * Determine the request status by custom code
@@ -47,6 +47,14 @@ service.interceptors.response.use(
 
     // 如果code不是0, 即判断为非正常请求.
     if (res.code !== 0) {
+      // -1: 业务逻辑出错
+      if (res.code === -1) {
+        Message({
+          message: res.message,
+          type: 'error',
+          duration: 3 * 1000
+        })
+      }
       // -2: 登录信息已过期;
       if (res.code === -2) {
         // to re-login

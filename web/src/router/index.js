@@ -116,6 +116,21 @@ export const constantRoutes = [
     ]
   },
   {
+    path: '/systemSettings',
+    component: Layout,
+    redirect: '/systemSettings/index',
+    name: '系统设置',
+    meta: { title: '系统设置', icon: 'system' },
+    children: [
+      {
+        path: 'index',
+        name: '系统设置',
+        component: () => import('@/views/SystemSettings/index'),
+        meta: { title: '系统设置', icon: 'system' }
+      }
+    ]
+  },
+  {
     path: 'external-link',
     component: Layout,
     name: '博客首页',

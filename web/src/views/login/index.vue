@@ -101,6 +101,18 @@ export default {
     if (item) {
       this.loginForm = item
     }
+    if (this.$route.query.jsessionid) {
+      const sendData = {
+        username: '',
+        password: '',
+        jsessionid: this.$route.query.jsessionid
+      }
+      this.$store.dispatch('user/login', sendData).then(() => {
+        setAdminInfo(this.loginForm)
+        this.$router.push({ path: this.redirect || '/' })
+        this.loading = false
+      })
+    }
   },
   methods: {
     showPwd() {
@@ -119,7 +131,8 @@ export default {
           this.loading = true
           const sendData = {
             username: this.loginForm.username,
-            password: md5(this.loginForm.password)
+            password: md5(this.loginForm.password),
+            jsessionid: this.$route.query.jsessionid
           }
           this.$store.dispatch('user/login', sendData).then(() => {
             setAdminInfo(this.loginForm)

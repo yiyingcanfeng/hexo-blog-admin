@@ -1,10 +1,18 @@
 import request from '@/utils/request'
 
 export function login(data) {
+  const headers = {}
+  if (data.jsessionid) {
+    headers.jsessionid = data.jsessionid
+  }
   return request({
     url: '/admin/login',
     method: 'post',
-    data
+    data: {
+      username: data.username,
+      password: data.password
+    },
+    headers: headers
   })
 }
 
