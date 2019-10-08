@@ -3,6 +3,7 @@
 <mapper namespace="com.movefeng.hexoblogadmin.dao.SystemConfigDao">
     <update id="update">
         update sys_config set
+        hexo_admin_url = #{hexoAdminUrl},
         hexo_visit_url = #{hexoVisitUrl},
         hexo_path = #{hexoPath},
         article_path = #{articlePath},
