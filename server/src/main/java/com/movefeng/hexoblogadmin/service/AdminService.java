@@ -22,7 +22,7 @@ public class AdminService {
         String password = admin.getPassword();
         admin.setPassword(EncryptUtils.SHA256(EncryptUtils.MD5(password)));
 
-            Admin admin1 = adminDao.selectAdminByUsernameAndPassword(admin);
+        Admin admin1 = adminDao.selectAdminByUsernameAndPassword(admin);
         return admin1 != null;
 
     }

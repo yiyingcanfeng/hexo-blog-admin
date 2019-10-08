@@ -70,4 +70,13 @@ public interface UserDao {
      * @param idList
      */
     void deleteBatchById(List idList);
+
+    /**
+     * 根据id查询user信息
+     *
+     * @param replyUserId
+     * @return
+     */
+    @Select("select * from user where id=#{replyUserId} ;")
+    User selectUserById(Integer replyUserId);
 }

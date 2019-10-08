@@ -58,8 +58,8 @@ public interface CommentDao {
 
     /**
      * 查询所有文章的评论,带模糊查询
-     *
-     * @return param
+     * @param param
+     * @return
      */
     Page<CommentVO> selectAllComments(@Param("param") Map<String, Object> param);
 
@@ -93,14 +93,14 @@ public interface CommentDao {
      *
      * @param idList
      */
-    void deleteBatchById(List idList);
+    void deleteBatchById(List<Integer> idList);
 
     /**
      * 根据评论id批量删除评论
      *
      * @param userIdList
      */
-    void deleteBatchByUserId(List userIdList);
+    void deleteBatchByUserId(List<Integer> userIdList);
 
     /**
      * 根据用户id删除该用户的评论

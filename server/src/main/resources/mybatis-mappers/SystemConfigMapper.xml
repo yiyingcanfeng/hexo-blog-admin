@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.movefeng.hexoblogadmin.dao.SystemConfigDao">
+    <update id="update">
+        update sys_config set
+        hexo_visit_url = #{hexoVisitUrl},
+        hexo_path = #{hexoPath},
+        article_path = #{articlePath},
+        public_path = #{publicPath},
+        user_mail_report = #{userMailReport},
+        admin_mail_report = #{adminMailReport},
+        smtp_sender = #{smtpSender}
+        where id = 1;
+    </update>
+</mapper>

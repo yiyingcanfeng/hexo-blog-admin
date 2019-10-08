@@ -2,12 +2,8 @@ package com.movefeng.hexoblogadmin.dao;
 
 import com.github.pagehelper.Page;
 import com.movefeng.hexoblogadmin.model.Article;
-import com.movefeng.hexoblogadmin.model.Comment;
 import com.movefeng.hexoblogadmin.vo.ArticleVO;
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.*;
 
 import java.util.List;
 import java.util.Map;
@@ -64,4 +60,11 @@ public interface ArticleDao {
     @Select("select * from article where title = #{title};")
     Article selectArticleByTitle(String title);
 
+    /**
+     * 根据标题修改文章信息
+     *
+     * @param articleVO
+     */
+    @Update("update article set path = #{path} where title = #{title} ;")
+    void updateByTitle(ArticleVO articleVO);
 }

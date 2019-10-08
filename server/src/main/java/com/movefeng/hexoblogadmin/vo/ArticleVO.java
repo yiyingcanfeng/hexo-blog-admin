@@ -11,6 +11,7 @@ public class ArticleVO {
 
     private Integer id;
     private String title;
+    private String path;
     private String content;
     private Date createTime;
     private int commentCount;

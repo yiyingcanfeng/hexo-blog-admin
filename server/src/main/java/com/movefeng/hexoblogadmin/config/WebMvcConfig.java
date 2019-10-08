@@ -1,6 +1,7 @@
 package com.movefeng.hexoblogadmin.config;
 
 import com.movefeng.hexoblogadmin.config.interceptor.AdminInterceptor;
+import com.movefeng.hexoblogadmin.model.SystemConfig;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,6 +15,9 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 import javax.annotation.Resource;
+import javax.mail.Authenticator;
+import javax.mail.PasswordAuthentication;
+import java.util.Properties;
 
 /**
  * 如果继承WebMvcConfigurationSupport ,那么SpringBoot默认有关Jackson的配置会失效
@@ -48,6 +52,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
                 .addPathPatterns("/user/**")
                 .addPathPatterns("/comment/**")
                 .excludePathPatterns("/admin/login")
+                .excludePathPatterns("/article/update")
                 .excludePathPatterns("/comment/create")
                 .excludePathPatterns("/comment/list")
         ;

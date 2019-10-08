@@ -9,6 +9,8 @@ config:
   uploadPath: /
 
 spring:
+  profiles:
+    active: dev
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3310/hexo-blog?useUnicode=true&characterEncoding=utf-8&allowMultiQueries=true&useSSL=false&serverTimezone=GMT%2B8&allowPublicKeyRetrieval=true
@@ -62,6 +64,8 @@ spring:
             auth: true
             enable: true
             required: true
+          ssl:
+            enable: true
 
   resources:
     static-locations: file:./static/

@@ -27,7 +27,6 @@ public interface SystemConfigDao {
      * @param systemConfig
      * @return
      */
-    @Update("update sys_config set article_path = #{articlePath} where id = 1;")
     Integer update(SystemConfig systemConfig);
 
 }

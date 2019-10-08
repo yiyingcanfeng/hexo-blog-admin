@@ -13,6 +13,8 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.io.IOException;
+import java.util.Enumeration;
 import java.util.Map;
 import java.util.Set;
 
@@ -52,18 +54,13 @@ public class AdminInterceptor extends HandlerInterceptorAdapter {
         boolean flag = false;
         response.setContentType("application/json;charset=UTF-8");
         ObjectMapper objectMapper = new ObjectMapper();
-
-        String jsessionid = request.getHeader("jsessionid");
-        if (jsessionid != null && !"".equals(jsessionid)) {
-            Map<String, ? extends Session> sessionsMap = sessionRepository.findByIndexNameAndIndexValue(FindByIndexNameSessionRepository.PRINCIPAL_NAME_INDEX_NAME, "admin");
-            Set<String> keySet = sessionsMap.keySet();
-            jsessionid = EncryptUtils.base64Decode(jsessionid);
-            if (keySet.contains(jsessionid)) {
-                flag = true;
-            } else {
-                Result result = new Result(Result.Code.LOGIN_INFO_EXPIRE, "登录信息过期");
-                response.getWriter().write(objectMapper.writeValueAsString(result));
-            }
+        Enumeration<String> headerNames = request.getHeaderNames();
+        String jsessionidHeader = request.getHeader("jsessionid");
+        String jsessionidParam = request.getParameter("jsessionid");
+        if (jsessionidHeader != null && !"".equals(jsessionidHeader)) {
+            flag = validateJessionId(response, objectMapper, jsessionidHeader);
+        } else if (jsessionidParam != null && !"".equals(jsessionidParam)) {
+            flag = validateJessionId(response, objectMapper, jsessionidParam);
         } else {
             HttpSession session = request.getSession();
             Object admin = session.getAttribute("admin");
@@ -73,6 +70,29 @@ public class AdminInterceptor extends HandlerInterceptorAdapter {
                 Result result = new Result(Result.Code.LOGIN_INFO_EXPIRE, "登录信息过期");
                 response.getWriter().write(objectMapper.writeValueAsString(result));
             }
+        }
+        return flag;
+    }
+
+    /**
+     * 验证session是否有效
+     *
+     * @param response
+     * @param objectMapper
+     * @param jsessionid
+     * @return
+     * @throws IOException
+     */
+    private boolean validateJessionId(HttpServletResponse response, ObjectMapper objectMapper, String jsessionid) throws IOException {
+        boolean flag = false;
+        Map<String, ? extends Session> sessionsMap = sessionRepository.findByIndexNameAndIndexValue(FindByIndexNameSessionRepository.PRINCIPAL_NAME_INDEX_NAME, "admin");
+        Set<String> keySet = sessionsMap.keySet();
+        jsessionid = EncryptUtils.base64Decode(jsessionid);
+        if (keySet.contains(jsessionid)) {
+            flag = true;
+        } else {
+            Result result = new Result(Result.Code.LOGIN_INFO_EXPIRE, "登录信息过期");
+            response.getWriter().write(objectMapper.writeValueAsString(result));
         }
         return flag;
     }

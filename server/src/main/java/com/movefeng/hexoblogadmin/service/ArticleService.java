@@ -223,6 +223,7 @@ public class ArticleService {
      * @param content
      * @return
      */
+    @Transactional(rollbackFor = Exception.class)
     public Result createArticle(String title, String content) {
         Result<String> result = new Result<>(Result.Code.ERROR);
         try {
@@ -254,6 +255,7 @@ public class ArticleService {
      * @param title
      * @return
      */
+    @Transactional(rollbackFor = Exception.class)
     public Result deleteArticle(String title) {
         Result<String> result = new Result<>(Result.Code.ERROR);
 
@@ -272,6 +274,12 @@ public class ArticleService {
         }
 
         return result;
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public Result update(ArticleVO articleVO) {
+        articleDao.updateByTitle(articleVO);
+        return new Result<>(Result.Code.SUCCESS);
     }
 
     /**

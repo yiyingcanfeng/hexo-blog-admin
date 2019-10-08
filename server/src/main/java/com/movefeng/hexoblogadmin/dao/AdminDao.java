@@ -28,4 +28,11 @@ public interface AdminDao {
     @Select("select * from admin where username = #{username}")
     Admin selectAdminByUsername(Admin admin);
 
+    /**
+     * 查询第一个管理员的信息
+     *
+     * @return
+     */
+    @Select("select * from admin limit 1;")
+    Admin selectFirstOne();
 }

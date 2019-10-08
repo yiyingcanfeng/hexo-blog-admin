@@ -8,14 +8,23 @@ import com.movefeng.hexoblogadmin.model.Article;
 import com.movefeng.hexoblogadmin.model.Comment;
 import com.movefeng.hexoblogadmin.model.SystemConfig;
 import com.movefeng.hexoblogadmin.model.User;
+import com.movefeng.hexoblogadmin.utils.SendMail;
 import com.movefeng.hexoblogadmin.vo.CommentResult;
 import com.movefeng.hexoblogadmin.vo.CommentVO;
 import com.movefeng.hexoblogadmin.vo.CommentVOs;
 import com.movefeng.hexoblogadmin.vo.Result;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.time.FastDateFormat;
+import org.springframework.core.task.TaskExecutor;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -24,6 +33,7 @@ import java.util.Map;
  * @author z
  */
 @Service
+@Slf4j
 public class CommentService {
 
     @Resource
@@ -34,6 +44,15 @@ public class CommentService {
 
     @Resource
     private ArticleDao articleDao;
+
+    @Resource
+    private JavaMailSender mailSender;
+
+    @Resource
+    private SystemConfig systemConfig;
+
+    @Resource
+    private TaskExecutor taskExecutor;
 
     /**
      * 创建评论
@@ -142,6 +161,37 @@ public class CommentService {
             comment.setReplyUserId(commentVO.getReplyUserId());
             comment.setParentId(commentVO.getParentId());
             commentDao.insertComment(comment);
+            // 当用户的评论被回复时给用户发送邮件
+            if (commentVO.getReplyUserId() != 0) {
+                taskExecutor.execute(() -> {
+                    if (systemConfig.getUserMailReport() == SystemConfig.MailReport.START) {
+                        User replyUser = userDao.selectUserById(commentVO.getReplyUserId());
+                        String commentTimeStr = FastDateFormat.getInstance("yyyy-MM-dd HH:mm:ss").format(new Date());
+                        SendMail.sendHtmlMail(
+                                mailSender,
+                                systemConfig.getSmtpSender(),
+                                replyUser.getEmail(),
+                                "hexo blog 评论回复通知",
+                                String.format("文章: %s<br>用户名: %s <br> 邮箱: %s<br> 评论时间: %s <br> 评论内容: %s <br> <a href='%s'>点击查看</a> ", article.getTitle(), user.getName(), user.getEmail(), commentTimeStr, comment.getContent(), systemConfig.getHexoVisitUrl() + article.getPath())
+                        );
+                    }
+                });
+            }
+            // 用户评论后给管理员发送邮件
+            taskExecutor.execute(() -> {
+                if (systemConfig.getAdminMailReport() == SystemConfig.MailReport.START) {
+                    String commentTimeStr = FastDateFormat.getInstance("yyyy-MM-dd HH:mm:ss").format(new Date());
+                    log.error(String.format("准备发送邮件 文章:%s \n 用户名:%s \n 邮箱: %s \n 评论时间:%s \n 评论内容:%s", article.getTitle(), user.getName(), user.getEmail(), commentTimeStr, comment.getContent()));
+                    SendMail.sendHtmlMail(
+                            mailSender,
+                            systemConfig.getSmtpSender(),
+                            systemConfig.getSmtpSender(),
+                            "hexo blog 评论通知",
+                            String.format("文章: %s<br>用户名: %s <br> 邮箱: %s<br> 评论时间: %s <br> 评论内容: %s <br> <a href='%s'>审核</a> ", article.getTitle(), user.getName(), user.getEmail(), commentTimeStr, comment.getContent(), systemConfig.getHexoAdminUrl() + "#/login?redirect=/comment/list&jsessionid=" + "")
+                    );
+                    log.error(String.format("邮件发送成功 文章:%s<br>用户名:%s <br> 邮箱: %s<br> 评论时间:%s <br> 评论内容:%s <br> <a href='%s'>审核</a> ", article.getTitle(), user.getName(), user.getEmail(), commentTimeStr, comment.getContent(), systemConfig.getHexoAdminUrl() + "#/login?redirect=/comment/list&jsessionid=" + ""));
+                }
+            });
             return new Result(Result.Code.SUCCESS);
         } else {
             return new Result(Result.Code.ERROR, "文章不存在！");
