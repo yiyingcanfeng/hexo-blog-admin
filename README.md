@@ -167,9 +167,9 @@ location /blog/api/ {
 ### TODO
 
 - 头像上传
-- 系统参数设置
+- 系统参数设置 √
 - 增加统计功能，比如文章数、评论数、用户数等等，并增加图表展示
-- 评论邮件通知
+- 评论邮件通知 √
 
 ## 相关项目
 [hexo-theme-yilia](https://github.com/yiyingcanfeng/hexo-theme-yilia)
