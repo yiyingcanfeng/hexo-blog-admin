@@ -51,7 +51,12 @@ public class OkHttpUtil<T> {
     private static final OkHttpClient mOkHttpClient = new OkHttpClient();
 
     public static final MediaType JSON = MediaType.parse("application/json;charset=utf-8");
+
     private static final Logger logger = LoggerFactory.getLogger(OkHttpUtil.class);
+
+    public static OkHttpClient getOkHttpClient() {
+        return mOkHttpClient;
+    }
 
     /**
      * 发起get请求
@@ -310,7 +315,7 @@ public class OkHttpUtil<T> {
      */
     private static String getString(String url, RequestType requestType, String json, Map<String, String> header, RequestMethod requestMethod) throws IOException {
         final String[] result = {""};
-        RequestBody body = RequestBody.create(JSON, json);
+        RequestBody body = RequestBody.create(json, JSON);
         Request request = getRequest(url, header, body, requestMethod);
 
         return getString(requestType, result, request);

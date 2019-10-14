@@ -11,6 +11,7 @@ CREATE TABLE `admin`  (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `username` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   `nickname` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `secret` varchar(10) DEFAULT NULL COMMENT 'aes加密的密钥',
   `password` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   `avatar` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '',
   PRIMARY KEY (`id`) USING BTREE
@@ -19,7 +20,7 @@ CREATE TABLE `admin`  (
 -- ----------------------------
 -- Records of admin
 -- ----------------------------
-INSERT INTO `admin` VALUES (1, 'admin', '管理员', '6fc3f369cc8bc7689c24c637109c0801d15bbb176e1a86f43e3c0947fa9a5114', '');
+INSERT INTO `admin` VALUES (1, 'admin', '管理员', '1111111111', 'BJzPssYoZMFWD/+8nhI7nrZNdmh4PI08cLpBpZu+w2Sl+O+DNDTA4dKPcGy7Rc7/', '');
 
 -- ----------------------------
 -- Table structure for article

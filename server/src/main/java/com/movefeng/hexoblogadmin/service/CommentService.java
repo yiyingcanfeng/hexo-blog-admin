@@ -1,31 +1,35 @@
 package com.movefeng.hexoblogadmin.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.pagehelper.Page;
+import com.movefeng.hexoblogadmin.dao.AdminDao;
 import com.movefeng.hexoblogadmin.dao.ArticleDao;
 import com.movefeng.hexoblogadmin.dao.CommentDao;
 import com.movefeng.hexoblogadmin.dao.UserDao;
-import com.movefeng.hexoblogadmin.model.Article;
-import com.movefeng.hexoblogadmin.model.Comment;
-import com.movefeng.hexoblogadmin.model.SystemConfig;
-import com.movefeng.hexoblogadmin.model.User;
+import com.movefeng.hexoblogadmin.model.*;
+import com.movefeng.hexoblogadmin.utils.AESUtil;
+import com.movefeng.hexoblogadmin.utils.OkHttpUtil;
 import com.movefeng.hexoblogadmin.utils.SendMail;
 import com.movefeng.hexoblogadmin.vo.CommentResult;
 import com.movefeng.hexoblogadmin.vo.CommentVO;
 import com.movefeng.hexoblogadmin.vo.CommentVOs;
 import com.movefeng.hexoblogadmin.vo.Result;
 import lombok.extern.slf4j.Slf4j;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 import org.apache.commons.lang3.time.FastDateFormat;
 import org.springframework.core.task.TaskExecutor;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import javax.mail.MessagingException;
-import javax.mail.internet.MimeMessage;
+import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -53,6 +57,12 @@ public class CommentService {
 
     @Resource
     private TaskExecutor taskExecutor;
+
+    @Resource
+    private HttpServletRequest request;
+
+    @Resource
+    private AdminDao adminDao;
 
     /**
      * 创建评论
@@ -178,18 +188,36 @@ public class CommentService {
                 });
             }
             // 用户评论后给管理员发送邮件
+            String serverName = request.getServerName();
+            int serverPort = request.getServerPort();
             taskExecutor.execute(() -> {
-                if (systemConfig.getAdminMailReport() == SystemConfig.MailReport.START) {
-                    String commentTimeStr = FastDateFormat.getInstance("yyyy-MM-dd HH:mm:ss").format(new Date());
-                    log.error(String.format("准备发送邮件 文章:%s \n 用户名:%s \n 邮箱: %s \n 评论时间:%s \n 评论内容:%s", article.getTitle(), user.getName(), user.getEmail(), commentTimeStr, comment.getContent()));
-                    SendMail.sendHtmlMail(
-                            mailSender,
-                            systemConfig.getSmtpSender(),
-                            systemConfig.getSmtpSender(),
-                            "hexo blog 评论通知",
-                            String.format("文章: %s<br>用户名: %s <br> 邮箱: %s<br> 评论时间: %s <br> 评论内容: %s <br> <a href='%s'>审核</a> ", article.getTitle(), user.getName(), user.getEmail(), commentTimeStr, comment.getContent(), systemConfig.getHexoAdminUrl() + "#/login?redirect=/comment/list&jsessionid=" + "")
-                    );
-                    log.error(String.format("邮件发送成功 文章:%s<br>用户名:%s <br> 邮箱: %s<br> 评论时间:%s <br> 评论内容:%s <br> <a href='%s'>审核</a> ", article.getTitle(), user.getName(), user.getEmail(), commentTimeStr, comment.getContent(), systemConfig.getHexoAdminUrl() + "#/login?redirect=/comment/list&jsessionid=" + ""));
+                try {
+                    if (systemConfig.getAdminMailReport() == SystemConfig.MailReport.START) {
+                        String commentTimeStr = FastDateFormat.getInstance("yyyy-MM-dd HH:mm:ss").format(new Date());
+                        log.error(String.format("准备发送邮件 文章:%s \n 用户名:%s \n 邮箱: %s \n 评论时间:%s \n 评论内容:%s", article.getTitle(), user.getName(), user.getEmail(), commentTimeStr, comment.getContent()));
+                        // 请求后台登录接口获取jsessionid
+                        String url = String.format("http://%s:%s/admin/login", serverName, serverPort);
+                        Admin admin = adminDao.selectAdminByEmail(systemConfig.getSmtpSender());
+                        ObjectMapper objectMapper = new ObjectMapper();
+                        Map<String, Object> adminMap = new HashMap<>();
+                        adminMap.put("username", admin.getUsername());
+                        adminMap.put("password", AESUtil.decryptBase64(admin.getPassword(), admin.getSecret()));
+                        String json = objectMapper.writeValueAsString(adminMap);
+                        Response okhttpResponse = OkHttpUtil.getOkHttpClient().newCall(new Request.Builder().url(url).post(RequestBody.create(json, OkHttpUtil.JSON)).build()).execute();
+                        String jsessionid = okhttpResponse.headers().get("jsessionid");
+                        okhttpResponse.close();
+                        // 发送邮件，点击审核超链接，可直接登录至系统审核页面，免去登录步骤
+                        SendMail.sendHtmlMail(
+                                mailSender,
+                                systemConfig.getSmtpSender(),
+                                systemConfig.getSmtpSender(),
+                                "hexo blog 评论通知",
+                                String.format("文章: %s<br>用户名: %s <br> 邮箱: %s<br> 评论时间: %s <br> 评论内容: %s <br> <a href='%s'>审核</a> ", article.getTitle(), user.getName(), user.getEmail(), commentTimeStr, comment.getContent(), systemConfig.getHexoAdminUrl() + "#/login?redirect=/comment/list&jsessionid=" + jsessionid)
+                        );
+                        log.error(String.format("邮件发送成功 文章:%s<br>用户名:%s <br> 邮箱: %s<br> 评论时间:%s <br> 评论内容:%s <br> <a href='%s'>审核</a> ", article.getTitle(), user.getName(), user.getEmail(), commentTimeStr, comment.getContent(), systemConfig.getHexoAdminUrl() + "#/login?redirect=/comment/list&jsessionid=" + jsessionid));
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
             });
             return new Result(Result.Code.SUCCESS);

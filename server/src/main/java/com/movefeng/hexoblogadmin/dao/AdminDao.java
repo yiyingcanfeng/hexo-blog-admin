@@ -35,4 +35,13 @@ public interface AdminDao {
      */
     @Select("select * from admin limit 1;")
     Admin selectFirstOne();
+
+    /**
+     * 根据邮箱获取管理员
+     *
+     * @param smtpSender
+     * @return
+     */
+    @Select("select * from admin where email = #{smtpSender} ;")
+    Admin selectAdminByEmail(String smtpSender);
 }

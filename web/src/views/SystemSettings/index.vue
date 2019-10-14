@@ -3,7 +3,7 @@
     <h2>博客相关设置</h2>
     <el-form
       label-position="right"
-      label-width="120px"
+      label-width="150px"
     >
       <el-form-item label="博客的访问url">
         <el-tooltip class="item" effect="dark" content="以 http/https 开头,结尾需要有 / 例: http://127.0.0.1/blog/" placement="right">
