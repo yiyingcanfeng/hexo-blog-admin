@@ -8,6 +8,7 @@ import com.movefeng.hexoblogadmin.service.AdminService;
 import com.movefeng.hexoblogadmin.utils.EncryptUtils;
 import com.movefeng.hexoblogadmin.vo.Result;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.session.FindByIndexNameSessionRepository;
 import org.springframework.session.Session;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -55,24 +56,21 @@ public class AdminController {
 
     @PostMapping("login")
     public Result list(@RequestBody Admin admin) {
-        if (admin.getUsername() == null || "".equals(admin.getUsername())) {
-            Admin firstOne = adminDao.selectFirstOne();
-            admin.setUsername(firstOne.getUsername());
-        }
-        ObjectMapper mapper = new ObjectMapper();
-        Map<String, Object> map = mapper.convertValue(admin, new TypeReference<Map<String, Object>>() {
-        });
-        map.put("token", "admin-token");
-        map.remove("password");
         // 获取请求头中携带的jsessionid
         String jsessionidHeader = request.getHeader("jsessionid");
         Map<String, ? extends Session> sessionsMap = sessionRepository.findByIndexNameAndIndexValue(FindByIndexNameSessionRepository.PRINCIPAL_NAME_INDEX_NAME, "admin");
         Set<String> keySet = sessionsMap.keySet();
         jsessionidHeader = EncryptUtils.base64Decode(jsessionidHeader);
-        boolean b = adminService.adminLogin(admin);
         // 验证请求头中的jsessionid是否是已经登录过未过期的jsessionid，如果是则跳过验证用户名密码
         if (jsessionidHeader != null && !"".equals(jsessionidHeader)) {
             if (keySet.contains(jsessionidHeader)) {
+                Admin firstOne = adminDao.selectFirstOne();
+                BeanUtils.copyProperties(firstOne, admin);
+                ObjectMapper mapper = new ObjectMapper();
+                Map<String, Object> map = mapper.convertValue(admin, new TypeReference<Map<String, Object>>() {
+                });
+                map.put("token", "admin-token");
+                map.remove("password");
                 session.setAttribute("admin", "admin");
                 // 目前暂时将value写死
                 session.setAttribute(
@@ -85,7 +83,18 @@ public class AdminController {
                 return new Result<>(Result.Code.LOGIN_INFO_INCORRECT, "会话不存在或已过期！");
             }
         } else {
+            if (admin.getUsername() == null || "".equals(admin.getUsername())) {
+                return new Result<>(Result.Code.ERROR, "用户名或密码不能为空！");
+            }
+            boolean b = adminService.adminLogin(admin);
             if (b) {
+                Admin firstOne = adminDao.selectAdminByUsername(admin);
+                BeanUtils.copyProperties(firstOne, admin);
+                ObjectMapper mapper = new ObjectMapper();
+                Map<String, Object> map = mapper.convertValue(admin, new TypeReference<Map<String, Object>>() {
+                });
+                map.put("token", "admin-token");
+                map.remove("password");
                 session.setAttribute("admin", "admin");
                 // 目前暂时将value写死
                 session.setAttribute(

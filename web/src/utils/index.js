@@ -117,3 +117,10 @@ export function param2Obj(url) {
 export function arrayUnique(arr) {
   return Array.from(new Set(arr))
 }
+
+export default {
+  arrayUnique,
+  parseTime,
+  formatTime,
+  param2Obj
+}

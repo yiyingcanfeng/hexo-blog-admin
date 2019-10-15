@@ -23,8 +23,13 @@ import '@/permission' // permission control
  * Currently MockJs will be used in the production environment,
  * please remove it before going online! ! !
  */
+import '@/utils/directives.js'
+import utils from '@/utils'
+import uiUtils from '@/utils/uiUtils'
 
 Vue.use(ElementUI, { locale })
+Vue.prototype.$uiUtils = uiUtils
+Vue.prototype.$utils = utils
 
 Vue.config.productionTip = false
 new Vue({

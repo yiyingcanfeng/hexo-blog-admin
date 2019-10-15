@@ -6,6 +6,7 @@ import com.movefeng.hexoblogadmin.service.ArticleService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.FileFilterUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.FastDateFormat;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
@@ -22,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 实时监控文章目录中文件的变化并写入数据库
@@ -88,6 +90,7 @@ public class ArticleDirectoryWatcherInitRunner implements ApplicationRunner {
      */
     private void writeArticleFileInfoToDataBase(File file) throws IOException, ParseException {
         Collection<File> mdFiles = FileUtils.listFiles(file, FileFilterUtils.suffixFileFilter("md"), null);
+        log.info("mdFileList: \n {}", StringUtils.join(mdFiles.stream().map(File::getName).collect(Collectors.toList()), '\n'));
         List<Article> articleList = new ArrayList<>();
         for (File mdFile : mdFiles) {
             String s = FileUtils.readFileToString(mdFile, "utf-8");

@@ -4,18 +4,24 @@
 
     <!--插入评论-->
     <insert id="insertComment" parameterType="com.movefeng.hexoblogadmin.model.Comment">
-        insert into comment (content,
-                             create_time,
-                             user_id,
-                             article_id,
-                             parent_id,
-                             reply_user_id)
-        values (#{content},
-                #{createTime},
-                #{userId},
-                #{articleId},
-                #{parentId},
-                #{replyUserId})
+        insert into comment (
+            content,
+            create_time,
+            user_id,
+            article_id,
+            parent_id,
+            reply_user_id,
+            audit_status
+        )
+        values (
+        #{content},
+        #{createTime},
+        #{userId},
+        #{articleId},
+        #{parentId},
+        #{replyUserId},
+        #{auditStatus}
+        )
     </insert>
     <!--审核多条评论-->
     <update id="auditBatch">
@@ -50,38 +56,40 @@
     <!--根据文章标题查询所有审核通过的父级评论-->
     <select id="selectCommentByArticleTitle" resultMap="comments">
         select comment.id as commentId,
-               content,
-               create_time,
-               name,
-               user.id    as userId,
-               parent_id
+        content,
+        create_time,
+        username,
+        user.id as userId,
+        parent_id
         from comment,
-             user
+        user
         where article_id = (select id from article where title = #{articleTitle})
-          and reply_user_id = 0
-          and comment.user_id = user.id
-          and comment.audit_status = ${@com.movefeng.hexoblogadmin.model.Comment$AuditStatus@AUDIT_SUCCESS}
+        and reply_user_id = 0
+        and comment.user_id = user.id
+        <bind name="_audit_status" value="@com.movefeng.hexoblogadmin.model.Comment$AuditStatus@AUDIT_SUCCESS"/>
+        and comment.audit_status = #{_audit_status}
         order by create_time desc, commentId desc
     </select>
     <!--查询某个评论下的所有审核通过的子评论-->
     <select id="selectChildComment" resultType="com.movefeng.hexoblogadmin.vo.CommentVO">
-        select a.*, name as replyUserName
+        select a.*, user.username as replyUserName
         from (
-                 select comment.id as id,
-                        content,
-                        create_time,
-                        name       as username,
-                        user.id    as userId,
-                        parent_id,
-                        reply_user_id
-                 from comment,
-                      user
-                 where article_id = (select id from article where title = #{articleTitle})
-                   and parent_id = #{parentId}
-                   and comment.user_id = user.id
-                   and comment.audit_status = ${@com.movefeng.hexoblogadmin.model.Comment$AuditStatus@AUDIT_SUCCESS}
-             ) a,
-             user
+        select comment.id as id,
+        content,
+        create_time,
+        username,
+        user.id as userId,
+        parent_id,
+        reply_user_id
+        from comment,
+        user
+        where article_id = (select id from article where title = #{articleTitle})
+        and parent_id = #{parentId}
+        and comment.user_id = user.id
+        <bind name="_audit_status" value="@com.movefeng.hexoblogadmin.model.Comment$AuditStatus@AUDIT_SUCCESS"/>
+        and comment.audit_status = #{_audit_status}
+        ) a,
+        user
         where a.reply_user_id = user.id
         order by a.create_time desc, a.id desc
     </select>
@@ -89,29 +97,31 @@
     <select id="selectChildCommentCount" resultType="int">
         select count(*)
         from comment,
-             user
+        user
         where article_id = (select id from article where title = #{articleTitle})
-          and parent_id = #{parentId}
-          and comment.user_id = user.id
-          and comment.audit_status = ${@com.movefeng.hexoblogadmin.model.Comment$AuditStatus@AUDIT_SUCCESS}
+        and parent_id = #{parentId}
+        and comment.user_id = user.id
+        <bind name="_audit_status" value="@com.movefeng.hexoblogadmin.model.Comment$AuditStatus@AUDIT_SUCCESS"/>
+        and comment.audit_status = #{_audit_status}
     </select>
     <!--查询某篇文章的审核通过的评论数-->
     <select id="selectCommentCount" resultType="java.lang.Integer">
         select count(*)
         from comment
         where article_id = (select id from article where title = #{articleTitle})
-          and audit_status = ${@com.movefeng.hexoblogadmin.model.Comment$AuditStatus@AUDIT_SUCCESS}
+        <bind name="_audit_status" value="@com.movefeng.hexoblogadmin.model.Comment$AuditStatus@AUDIT_SUCCESS"/>
+        and audit_status = #{_audit_status}
     </select>
     <!--查询所有文章的评论,带模糊查询-->
     <select id="selectAllComments" resultType="com.movefeng.hexoblogadmin.vo.CommentVO"
             parameterType="map">
-        select a.*, user.name as replyUserName
+        select a.*, user.username as replyUserName
         from (
         select comment.id as id,
         article.title as articleTitle,
         content,
         comment.create_time,
-        name as username,
+        username as username,
         user.id as userId,
         parent_id,
         reply_user_id as replyUserId,
@@ -134,7 +144,7 @@
             and comment.create_time &lt; #{param.searchDatetimeEnd}
         </if>
         <if test="param.searchUsername != null and param.searchUsername != ''">
-            and user.name like concat('%', #{param.searchUsername}, '%')
+            and user.username like concat('%', #{param.searchUsername}, '%')
         </if>
         ) a
         left join user
@@ -147,7 +157,7 @@
             <id column="commentId" property="id"/>
             <result column="content" property="content"/>
             <result column="create_time" property="createTime"/>
-            <result column="name" property="username"/>
+            <result column="username" property="username"/>
             <result column="userId" property="userId"/>
             <result column="parent_id" property="parentId"/>
         </association>

@@ -36,7 +36,7 @@ public interface UserDao {
      * @param username
      * @return
      */
-    @Select("select * from user where name = #{username}")
+    @Select("select * from user where username = #{username}")
     User selectUserByUsername(String username);
 
     /**
@@ -44,7 +44,7 @@ public interface UserDao {
      *
      * @param commentVO
      */
-    @Update("update user set name = #{username} where email = #{userMail}")
+    @Update("update user set username = #{username} where email = #{userMail}")
     void updateUserByEmail(CommentVO commentVO);
 
     /**
@@ -69,7 +69,7 @@ public interface UserDao {
      *
      * @param idList
      */
-    void deleteBatchById(List idList);
+    void deleteBatchById(List<Integer> idList);
 
     /**
      * 根据id查询user信息

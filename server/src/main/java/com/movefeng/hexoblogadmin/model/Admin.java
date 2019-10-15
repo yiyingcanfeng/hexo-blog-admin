@@ -2,11 +2,13 @@ package com.movefeng.hexoblogadmin.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
+import lombok.experimental.Accessors;
 
 /**
  * @author z
  */
 @Data
+@Accessors(chain = true)
 public class Admin {
 
     private String username;

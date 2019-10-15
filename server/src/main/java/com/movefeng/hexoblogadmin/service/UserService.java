@@ -59,9 +59,9 @@ public class UserService {
      * @return
      */
     @Transactional(rollbackFor = Exception.class)
-    public Result deleteBatchById(Map<String, Object> map) {
-        if (map.get("id") != null && !"".equals(map.get("id"))) {
-            List idList = (List) map.get("id");
+    public Result deleteBatchById(Map<String, List<Integer>> map) {
+        if (map.get("id") != null) {
+            List<Integer> idList = map.get("id");
             userDao.deleteBatchById(idList);
             commentDao.deleteBatchByUserId(idList);
             return new Result(Result.Code.SUCCESS, "操作成功！");

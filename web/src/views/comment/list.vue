@@ -119,11 +119,12 @@
           <el-tag v-if="scope.row.auditStatus===auditStatus.WAIT_AUDIT" type="danger">未通过</el-tag>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="操作" width="275">
+      <el-table-column align="center" label="操作" width="300">
         <template slot-scope="scope">
           <el-button v-if="scope.row.auditStatus===auditStatus.AUDIT_SUCCESS" type="danger" :loading="operateLoading" @click="cancelAudit(scope.row.id)">取消审核</el-button>
           <el-button v-if="scope.row.auditStatus===auditStatus.WAIT_AUDIT" type="success" :loading="operateLoading" @click="passAudit(scope.row.id)">通过审核</el-button>
           <el-button type="danger" @click="deleteComment(scope.row.id)">删除</el-button>
+          <el-button type="primary" @click="replyCommentDialogShow(scope.row)">回复</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -138,6 +139,46 @@
       @size-change="handleSizeChange"
       @current-change="handleCurrentChange"
     />
+    <el-dialog
+      v-dialogDrag
+      width="35%"
+      title="回复评论"
+      :visible.sync="replyCommentDialogVisible"
+      @close="replyCommentDialogClose"
+    >
+      <el-form
+        label-position="right"
+        label-width="100px"
+      >
+        <el-form-item label="邮箱地址">
+          <el-input
+            v-model="replyCommentForm.userMail"
+            placeholder="默认为smtp发信邮箱"
+            size="small"
+            clearable
+          />
+        </el-form-item>
+        <el-form-item label="用户名">
+          <el-input
+            v-model="replyCommentForm.username"
+            placeholder="请填写用户名"
+            size="small"
+            clearable
+          ></el-input>
+        </el-form-item>
+        <el-form-item label="回复内容">
+          <el-input
+            v-model="replyCommentForm.content"
+            placeholder="请填写回复内容"
+            size="small"
+            clearable
+          />
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" :loading="replyCommentOperateLoading" @click="replyComment">回复</el-button>
+        </el-form-item>
+      </el-form>
+    </el-dialog>
   </div>
 </template>
 
@@ -145,8 +186,14 @@
 import request from '@/utils/request'
 import { param2Obj, arrayUnique } from '@/utils/index'
 import AuditStatus from '@/utils/const'
+import { mapGetters } from 'vuex'
 export default {
   name: 'List',
+  computed: {
+    ...mapGetters([
+      'email', 'nickname'
+    ])
+  },
   data() {
     return {
       data: {
@@ -157,6 +204,8 @@ export default {
       listLoading: true,
       operateLoading: false,
       batchOperateLoading: false,
+      replyCommentOperateLoading: false,
+      replyCommentDialogVisible: false,
       currentPage: 1,
       pageSize: 10,
       searchForm: {
@@ -164,6 +213,15 @@ export default {
         searchTitle: '',
         searchComment: '',
         searchDatetime: ''
+      },
+      replyCommentForm: {
+        userMail: '',
+        articleTitle: '',
+        auditStatus: 1,
+        parentId: 0,
+        replyUserId: 0,
+        username: '',
+        content: ''
       },
       multipleSelection: [],
       pickerOptions: {
@@ -295,6 +353,39 @@ export default {
           this.fetchData(this.currentPage, this.pageSize)
         })
       })
+    },
+    replyCommentDialogShow(item) {
+      this.replyCommentForm.userMail = this.email
+      this.replyCommentForm.replyUserId = item.userId
+      this.replyCommentForm.articleTitle = item.articleTitle
+      this.replyCommentForm.parentId = item.id
+      this.replyCommentDialogVisible = true
+    },
+    replyComment() {
+      this.replyCommentOperateLoading = true
+      request({
+        url: '/comment/create',
+        method: 'post',
+        data: this.replyCommentForm
+      }).then(response => {
+        this.$uiUtils.showSuccessMessage('操作成功！')
+        this.fetchData(this.currentPage, this.pageSize)
+        this.replyCommentOperateLoading = false
+        this.replyCommentDialogVisible = false
+      }).catch(reason => {
+        this.replyCommentOperateLoading = false
+      })
+    },
+    replyCommentDialogClose() {
+      this.replyCommentForm = {
+        userMail: '',
+        articleTitle: '',
+        auditStatus: 1,
+        parentId: 0,
+        replyUserId: 0,
+        username: '',
+        content: ''
+      }
     },
     searchComment() {
       this.fetchData(this.currentPage, this.pageSize, this.searchForm)

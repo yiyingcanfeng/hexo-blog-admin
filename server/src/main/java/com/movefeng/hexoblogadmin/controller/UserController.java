@@ -16,6 +16,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -68,7 +69,7 @@ public class UserController {
      * @return
      */
     @RequestMapping("deleteBatch")
-    public Result deleteBatch(@RequestBody Map<String, Object> map) {
+    public Result deleteBatch(@RequestBody Map<String, List<Integer>> map) {
         return userService.deleteBatchById(map);
     }
 

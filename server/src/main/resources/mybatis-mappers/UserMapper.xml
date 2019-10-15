@@ -4,8 +4,8 @@
 
     <!--新增用户-->
     <insert id="insertUser" useGeneratedKeys="true" keyProperty="id">
-        insert into user (name, email, website)
-        values (#{name}, #{email}, #{website})
+        insert into user (username, email, website)
+        values (#{username}, #{email}, #{website})
     </insert>
     <!--根据id批量删除用户-->
     <delete id="deleteBatchById">
@@ -24,7 +24,7 @@
         left join comment on comment.user_id = user.id
         where 0 = 0
         <if test="param.searchUsername != null and param.searchUsername != ''">
-            and name like concat('%',#{param.searchUsername},'%')
+            and username like concat('%',#{param.searchUsername},'%')
         </if>
         <if test="param.searchEmail != null and param.searchEmail != ''">
             and email like concat('%',#{param.searchEmail},'%')

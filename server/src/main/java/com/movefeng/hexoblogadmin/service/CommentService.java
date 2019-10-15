@@ -1,6 +1,5 @@
 package com.movefeng.hexoblogadmin.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.pagehelper.Page;
 import com.movefeng.hexoblogadmin.dao.AdminDao;
@@ -84,7 +83,7 @@ public class CommentService {
             if (user1 == null) {
                 User insertUser = new User();
                 insertUser.setEmail(userMail);
-                insertUser.setName(voUsername);
+                insertUser.setUsername(voUsername);
                 insertUser.setWebsite(commentVO.getUserWebsite());
                 userDao.insertUser(insertUser);
                 return setComment(commentVO, insertUser, article);
@@ -92,7 +91,7 @@ public class CommentService {
                 return new Result(Result.Code.ERROR, "该昵称已被使用！");
             }
         } else {
-            String username = user.getName();
+            String username = user.getUsername();
             // 比较前端传过来的用户名和数据库中的用户名
             if (username.equals(voUsername)) {
                 return setComment(commentVO, user, article);
@@ -164,7 +163,8 @@ public class CommentService {
         Comment comment = new Comment();
         if (article != null) {
             comment.setArticleId(article.getId());
-            comment.setAuditStatus(Comment.AuditStatus.WAIT_AUDIT);
+            // 如果是管理员的评论，则无需审核
+            comment.setAuditStatus(user.getEmail().equals(systemConfig.getSmtpSender()) ? Comment.AuditStatus.AUDIT_SUCCESS : Comment.AuditStatus.WAIT_AUDIT);
             comment.setContent(commentVO.getContent());
             comment.setCreateTime(new Date());
             comment.setUserId(user.getId());
@@ -182,7 +182,7 @@ public class CommentService {
                                 systemConfig.getSmtpSender(),
                                 replyUser.getEmail(),
                                 "hexo blog 评论回复通知",
-                                String.format("文章: %s<br>用户名: %s <br> 邮箱: %s<br> 评论时间: %s <br> 评论内容: %s <br> <a href='%s'>点击查看</a> ", article.getTitle(), user.getName(), user.getEmail(), commentTimeStr, comment.getContent(), systemConfig.getHexoVisitUrl() + article.getPath())
+                                String.format("文章: %s<br>用户名: %s <br> 邮箱: %s<br> 评论时间: %s <br> 评论内容: %s <br> <a href='%s'>点击查看</a> ", article.getTitle(), user.getUsername(), user.getEmail(), commentTimeStr, comment.getContent(), systemConfig.getHexoVisitUrl() + article.getPath())
                         );
                     }
                 });
@@ -190,36 +190,40 @@ public class CommentService {
             // 用户评论后给管理员发送邮件
             String serverName = request.getServerName();
             int serverPort = request.getServerPort();
-            taskExecutor.execute(() -> {
-                try {
-                    if (systemConfig.getAdminMailReport() == SystemConfig.MailReport.START) {
-                        String commentTimeStr = FastDateFormat.getInstance("yyyy-MM-dd HH:mm:ss").format(new Date());
-                        log.error(String.format("准备发送邮件 文章:%s \n 用户名:%s \n 邮箱: %s \n 评论时间:%s \n 评论内容:%s", article.getTitle(), user.getName(), user.getEmail(), commentTimeStr, comment.getContent()));
-                        // 请求后台登录接口获取jsessionid
-                        String url = String.format("http://%s:%s/admin/login", serverName, serverPort);
-                        Admin admin = adminDao.selectAdminByEmail(systemConfig.getSmtpSender());
-                        ObjectMapper objectMapper = new ObjectMapper();
-                        Map<String, Object> adminMap = new HashMap<>();
-                        adminMap.put("username", admin.getUsername());
-                        adminMap.put("password", AESUtil.decryptBase64(admin.getPassword(), admin.getSecret()));
-                        String json = objectMapper.writeValueAsString(adminMap);
-                        Response okhttpResponse = OkHttpUtil.getOkHttpClient().newCall(new Request.Builder().url(url).post(RequestBody.create(json, OkHttpUtil.JSON)).build()).execute();
-                        String jsessionid = okhttpResponse.headers().get("jsessionid");
-                        okhttpResponse.close();
-                        // 发送邮件，点击审核超链接，可直接登录至系统审核页面，免去登录步骤
-                        SendMail.sendHtmlMail(
-                                mailSender,
-                                systemConfig.getSmtpSender(),
-                                systemConfig.getSmtpSender(),
-                                "hexo blog 评论通知",
-                                String.format("文章: %s<br>用户名: %s <br> 邮箱: %s<br> 评论时间: %s <br> 评论内容: %s <br> <a href='%s'>审核</a> ", article.getTitle(), user.getName(), user.getEmail(), commentTimeStr, comment.getContent(), systemConfig.getHexoAdminUrl() + "#/login?redirect=/comment/list&jsessionid=" + jsessionid)
-                        );
-                        log.error(String.format("邮件发送成功 文章:%s<br>用户名:%s <br> 邮箱: %s<br> 评论时间:%s <br> 评论内容:%s <br> <a href='%s'>审核</a> ", article.getTitle(), user.getName(), user.getEmail(), commentTimeStr, comment.getContent(), systemConfig.getHexoAdminUrl() + "#/login?redirect=/comment/list&jsessionid=" + jsessionid));
+            // 判断是否是管理员的评论，如果是管理员评论的话就不发送邮件
+            if (!user.getEmail().equals(systemConfig.getSmtpSender())){
+                taskExecutor.execute(() -> {
+                    try {
+                        if (systemConfig.getAdminMailReport() == SystemConfig.MailReport.START) {
+                            String commentTimeStr = FastDateFormat.getInstance("yyyy-MM-dd HH:mm:ss").format(new Date());
+                            log.error(String.format("准备发送邮件 文章:%s \n 用户名:%s \n 邮箱: %s \n 评论时间:%s \n 评论内容:%s", article.getTitle(), user.getUsername(), user.getEmail(), commentTimeStr, comment.getContent()));
+                            // 请求后台登录接口获取jsessionid
+                            String url = String.format("http://%s:%s/admin/login", serverName, serverPort);
+                            Admin admin = adminDao.selectAdminByEmail(systemConfig.getSmtpSender());
+                            ObjectMapper objectMapper = new ObjectMapper();
+                            Map<String, Object> adminMap = new HashMap<>();
+                            adminMap.put("username", admin.getUsername());
+                            adminMap.put("password", AESUtil.decryptBase64(admin.getPassword(), admin.getSecret()));
+                            String json = objectMapper.writeValueAsString(adminMap);
+                            Response okhttpResponse = OkHttpUtil.getOkHttpClient().newCall(new Request.Builder().url(url).post(RequestBody.create(json, OkHttpUtil.JSON)).build()).execute();
+                            String jsessionid = okhttpResponse.headers().get("jsessionid");
+                            okhttpResponse.close();
+                            // 发送邮件，点击审核超链接，可直接登录至系统审核页面，免去登录步骤
+                            SendMail.sendHtmlMail(
+                                    mailSender,
+                                    systemConfig.getSmtpSender(),
+                                    systemConfig.getSmtpSender(),
+                                    "hexo blog 评论通知",
+                                    String.format("文章: %s<br>用户名: %s <br> 邮箱: %s<br> 评论时间: %s <br> 评论内容: %s <br> <a href='%s'>审核</a> ", article.getTitle(), user.getUsername(), user.getEmail(), commentTimeStr, comment.getContent(), systemConfig.getHexoAdminUrl() + "#/login?redirect=/comment/list&jsessionid=" + jsessionid)
+                            );
+                            log.error(String.format("邮件发送成功 文章:%s<br>用户名:%s <br> 邮箱: %s<br> 评论时间:%s <br> 评论内容:%s <br> <a href='%s'>审核</a> ", article.getTitle(), user.getUsername(), user.getEmail(), commentTimeStr, comment.getContent(), systemConfig.getHexoAdminUrl() + "#/login?redirect=/comment/list&jsessionid=" + jsessionid));
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
                     }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            });
+                });
+            }
+
             return new Result(Result.Code.SUCCESS);
         } else {
             return new Result(Result.Code.ERROR, "文章不存在！");
