@@ -102,6 +102,7 @@ export default {
       this.loginForm = item
     }
     if (this.$route.query.jsessionid) {
+      this.loading = true
       const sendData = {
         username: '',
         password: '',

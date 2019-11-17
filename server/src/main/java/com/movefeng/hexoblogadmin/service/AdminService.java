@@ -20,7 +20,11 @@ public class AdminService {
 
     public boolean adminLogin(Admin admin) {
         String password = admin.getPassword();
-        admin.setPassword(AESUtil.encryptBase64(password, adminInfo(admin).getSecret()));
+        Admin adminByUsername = adminDao.selectAdminByUsername(admin);
+        if (adminByUsername == null) {
+            return false;
+        }
+        admin.setPassword(AESUtil.encryptBase64(password, adminByUsername.getSecret()));
 
         Admin admin1 = adminDao.selectAdminByUsernameAndPassword(admin);
         return admin1 != null;

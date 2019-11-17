@@ -6,6 +6,7 @@ const state = {
   token: getToken(),
   username: getUsername(),
   nickname: '',
+  email: '',
   avatar: ''
 }
 
@@ -18,6 +19,9 @@ const mutations = {
   },
   SET_NICKNAME: (state, nickname) => {
     state.nickname = nickname
+  },
+  SET_EMAIL: (state, email) => {
+    state.email = email
   },
   SET_AVATAR: (state, avatar) => {
     state.avatar = avatar
@@ -34,6 +38,7 @@ const actions = {
         commit('SET_TOKEN', data.token)
         commit('SET_USERNAME', data.username)
         commit('SET_NICKNAME', data.nickname)
+        commit('SET_EMAIL', data.email)
         setToken(data.token)
         resolve()
       }).catch(error => {
@@ -50,11 +55,10 @@ const actions = {
         if (!data) {
           reject('验证失败，请重新登录')
         }
-
-        const { nickname, avatar } = data
-
+        const { nickname, avatar, email } = data
         commit('SET_NICKNAME', nickname)
         commit('SET_AVATAR', avatar)
+        commit('SET_EMAIL', email)
         resolve(data)
       }).catch(error => {
         reject(error)
