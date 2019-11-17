@@ -95,7 +95,7 @@ export const constantRoutes = [
       {
         path: 'list',
         name: '评论列表',
-        component: () => import('@/views/comment/list'),
+        component: () => import('@/views/comment/index'),
         meta: { title: '评论列表', icon: 'comment' }
       }
     ]

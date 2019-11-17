@@ -382,9 +382,7 @@ export default {
         articleTitle: '',
         auditStatus: 1,
         parentId: 0,
-        replyUserId: 0,
-        username: '',
-        content: ''
+        replyUserId: 0
       }
     },
     searchComment() {

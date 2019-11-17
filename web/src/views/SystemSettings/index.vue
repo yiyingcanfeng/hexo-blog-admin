@@ -2,6 +2,7 @@
   <div class="settings-container">
     <h2>博客相关设置</h2>
     <el-form
+      v-loading="systemConfigFormLoading"
       label-position="right"
       label-width="150px"
     >
@@ -75,6 +76,7 @@
             :active-value="1"
             :inactive-value="0"
             active-text="开启"
+            inactive-text="关闭"
           />
         </el-tooltip>
       </el-form-item>
@@ -85,6 +87,7 @@
             :active-value="1"
             :inactive-value="0"
             active-text="开启"
+            inactive-text="关闭"
           />
         </el-tooltip>
       </el-form-item>
@@ -119,6 +122,7 @@ export default {
     return {
       systemConfigDialogVisible: false,
       systemConfigSubmitLoading: false,
+      systemConfigFormLoading: false,
       systemConfigForm: {
         articlePath: '',
         hexoVisitUrl: '',
@@ -136,10 +140,12 @@ export default {
   },
   methods: {
     fetchData() {
+      this.systemConfigFormLoading = true
       request({
         url: '/system/listSettings',
         method: 'get'
       }).then(response => {
+        this.systemConfigFormLoading = false
         this.systemConfigForm = response.data
       })
     },
