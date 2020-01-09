@@ -9,13 +9,16 @@ import java.util.Date;
 @EqualsAndHashCode
 public class Article {
 
-    @EqualsAndHashCode.Exclude
-    private Integer id;
-    private String title;
-    @EqualsAndHashCode.Exclude
-    private String path;
     private String content;
     private Date createTime;
+    private String title;
+
+    @EqualsAndHashCode.Exclude
+    private Integer id;
+    @EqualsAndHashCode.Exclude
+    private String path;
     @EqualsAndHashCode.Exclude
     private Date updateTime;
+    @EqualsAndHashCode.Exclude
+    private Integer visitCount;
 }

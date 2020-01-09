@@ -6,19 +6,18 @@ import com.movefeng.hexoblogadmin.dao.CommentDao;
 import com.movefeng.hexoblogadmin.dao.UserDao;
 import com.movefeng.hexoblogadmin.model.Article;
 import com.movefeng.hexoblogadmin.model.SystemConfig;
+import com.movefeng.hexoblogadmin.model.VisitRecord;
 import com.movefeng.hexoblogadmin.vo.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
-import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -40,6 +39,9 @@ public class ArticleService {
 
     @Resource
     private SystemConfig systemConfig;
+
+    @Resource
+    private HttpServletRequest request;
 
     /**
      * 查询所有文章信息
@@ -63,11 +65,11 @@ public class ArticleService {
         List<Article> toInsert = articleList.stream().filter(x -> !articlesOld.contains(x)).collect(Collectors.toList());
         // 旧数据中有的而新数据中没有的就是需要delete的数据
         List<Article> toDelete = articlesOld.stream().filter(x -> !articleList.contains(x)).collect(Collectors.toList());
-        if (toInsert.size() > 0) {
-            articleDao.insertArticleBatch(toInsert);
-        }
         if (toDelete.size() > 0) {
             articleDao.deleteBatch(toDelete);
+        }
+        if (toInsert.size() > 0) {
+            articleDao.insertArticleBatch(toInsert);
         }
 
     }
@@ -276,10 +278,41 @@ public class ArticleService {
         return result;
     }
 
+    /**
+     * 更新文章基本信息
+     *
+     * @param articleVO
+     * @return
+     */
     @Transactional(rollbackFor = Exception.class)
     public Result update(ArticleVO articleVO) {
-        articleDao.updateByTitle(articleVO);
+        Article article = articleDao.selectArticleByTitle(articleVO.getTitle());
+        if (article != null) {
+            article.setPath(articleVO.getPath());
+            article.setVisitCount(Objects.requireNonNullElse(article.getVisitCount(), 0) + 1);
+            articleDao.updateByTitle(article);
+        } else {
+            return new Result<>(Result.Code.ERROR);
+        }
         return new Result<>(Result.Code.SUCCESS);
+    }
+
+    /**
+     * 更新文章基本信息
+     *
+     * @return
+     */
+    public String recordVisitInfo() {
+        String referer = request.getHeader("referer");
+        String remoteAddr = request.getRemoteAddr();
+        int remotePort = request.getRemotePort();
+        VisitRecord visitRecord = new VisitRecord()
+                .setVisitTime(new Date())
+                .setVisitUrl(referer)
+                .setRemoteIp(remoteAddr)
+                .setRemotePort(remotePort);
+        articleDao.insertVisitRecord(visitRecord);
+        return null;
     }
 
     /**
@@ -292,5 +325,9 @@ public class ArticleService {
      */
     public boolean isLegalFilename(String filename) {
         return !Pattern.matches(".*[\\\\/:*?\"<>|].*", filename);
+    }
+
+    public void saveAllArticleInfo(List<Article> articleList) {
+        articleDao.updateArticleBatch(articleList);
     }
 }

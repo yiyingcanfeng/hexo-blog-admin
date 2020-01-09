@@ -44,5 +44,22 @@
             and commentCount = #{param.searchCommentCount}
         </if>
     </select>
+    <insert id="insertVisitRecord">
+        insert into visit_record (visit_time, visit_url, article_title, remote_ip, remote_port)
+        values (#{visitTime}, #{visitUrl}, #{articleTitle}, #{remoteIp}, #{remotePort});
+    </insert>
+    <update id="updateArticleBatch">
+        update article
+        set path = case title
+        <foreach collection="list" item="item">
+            when #{item.title} then #{item.path}
+        </foreach>
+        end
+        where title in (
+        <foreach collection="list" item="item" separator=",">
+            #{item.title}
+        </foreach>
+        )
+    </update>
 
 </mapper>

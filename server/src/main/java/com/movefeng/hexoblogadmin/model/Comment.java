@@ -12,6 +12,7 @@ public class Comment {
     private Date createTime;
     private Integer userId;
     private Integer articleId;
+    private String articleTitle;
     private Integer parentId;
     private Integer replyUserId;
     private Integer auditStatus;

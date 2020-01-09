@@ -3,6 +3,7 @@ package com.movefeng.hexoblogadmin.controller;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.movefeng.hexoblogadmin.model.Article;
 import com.movefeng.hexoblogadmin.service.ArticleService;
 import com.movefeng.hexoblogadmin.vo.ArticleVO;
 import com.movefeng.hexoblogadmin.vo.Result;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
@@ -114,6 +116,26 @@ public class ArticleController {
     @RequestMapping("update")
     public Result update(@RequestBody ArticleVO articleVO) {
         return articleService.update(articleVO);
+    }
+
+    /**
+     * 记录访问信息
+     *
+     * @return
+     */
+    @RequestMapping("visitInfo")
+    public String recordVisitInfo() {
+        return articleService.recordVisitInfo();
+    }
+
+    /**
+     * 记录文章信息
+     *
+     * @return
+     */
+    @RequestMapping("allArticleInfo")
+    public void allArticleInfo(@RequestBody List<Article> articleList) {
+        articleService.saveAllArticleInfo(articleList);
     }
 
 }

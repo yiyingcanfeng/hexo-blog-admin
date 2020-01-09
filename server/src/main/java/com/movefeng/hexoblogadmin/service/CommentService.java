@@ -163,6 +163,7 @@ public class CommentService {
         Comment comment = new Comment();
         if (article != null) {
             comment.setArticleId(article.getId());
+            comment.setArticleTitle(articleDao.selectArticleById(article.getId()));
             // 如果是管理员的评论，则无需审核
             comment.setAuditStatus(user.getEmail().equals(systemConfig.getSmtpSender()) ? Comment.AuditStatus.AUDIT_SUCCESS : Comment.AuditStatus.WAIT_AUDIT);
             comment.setContent(commentVO.getContent());

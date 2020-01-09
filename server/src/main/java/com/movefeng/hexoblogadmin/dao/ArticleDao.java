@@ -2,6 +2,7 @@ package com.movefeng.hexoblogadmin.dao;
 
 import com.github.pagehelper.Page;
 import com.movefeng.hexoblogadmin.model.Article;
+import com.movefeng.hexoblogadmin.model.VisitRecord;
 import com.movefeng.hexoblogadmin.vo.ArticleVO;
 import org.apache.ibatis.annotations.*;
 
@@ -63,8 +64,31 @@ public interface ArticleDao {
     /**
      * 根据标题修改文章信息
      *
-     * @param articleVO
+     * @param article
      */
-    @Update("update article set path = #{path} where title = #{title} ;")
-    void updateByTitle(ArticleVO articleVO);
+    @Update("update article set path = #{path}, visit_count = #{visitCount} where title = #{title} ;")
+    void updateByTitle(Article article);
+
+    /**
+     * 新增访问记录
+     *
+     * @param visitRecord
+     */
+    void insertVisitRecord(VisitRecord visitRecord);
+
+    /**
+     * 根据id查询文章
+     *
+     * @param id
+     * @return
+     */
+    @Select("select * from article where id = #{id}")
+    String selectArticleById(Integer id);
+
+    /**
+     * 批量更新文章信息
+     *
+     * @param articleList
+     */
+    void updateArticleBatch(List<Article> articleList);
 }

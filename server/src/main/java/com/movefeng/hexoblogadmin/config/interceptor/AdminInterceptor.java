@@ -58,9 +58,9 @@ public class AdminInterceptor extends HandlerInterceptorAdapter {
         String jsessionidHeader = request.getHeader("jsessionid");
         String jsessionidParam = request.getParameter("jsessionid");
         if (jsessionidHeader != null && !"".equals(jsessionidHeader)) {
-            flag = validateJessionId(response, objectMapper, jsessionidHeader);
+            flag = validateJsessionId(response, objectMapper, jsessionidHeader);
         } else if (jsessionidParam != null && !"".equals(jsessionidParam)) {
-            flag = validateJessionId(response, objectMapper, jsessionidParam);
+            flag = validateJsessionId(response, objectMapper, jsessionidParam);
         } else {
             HttpSession session = request.getSession();
             Object admin = session.getAttribute("admin");
@@ -83,7 +83,7 @@ public class AdminInterceptor extends HandlerInterceptorAdapter {
      * @return
      * @throws IOException
      */
-    private boolean validateJessionId(HttpServletResponse response, ObjectMapper objectMapper, String jsessionid) throws IOException {
+    private boolean validateJsessionId(HttpServletResponse response, ObjectMapper objectMapper, String jsessionid) throws IOException {
         boolean flag = false;
         Map<String, ? extends Session> sessionsMap = sessionRepository.findByIndexNameAndIndexValue(FindByIndexNameSessionRepository.PRINCIPAL_NAME_INDEX_NAME, "admin");
         Set<String> keySet = sessionsMap.keySet();

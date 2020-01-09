@@ -53,6 +53,8 @@ public class WebMvcConfig implements WebMvcConfigurer {
                 .addPathPatterns("/comment/**")
                 .excludePathPatterns("/admin/login")
                 .excludePathPatterns("/article/update")
+                .excludePathPatterns("/article/visitInfo")
+                .excludePathPatterns("/article/allArticleInfo")
                 .excludePathPatterns("/comment/create")
                 .excludePathPatterns("/comment/list")
         ;

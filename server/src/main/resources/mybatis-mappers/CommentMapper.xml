@@ -9,6 +9,7 @@
             create_time,
             user_id,
             article_id,
+            article_title,
             parent_id,
             reply_user_id,
             audit_status
@@ -18,6 +19,7 @@
         #{createTime},
         #{userId},
         #{articleId},
+        #{articleTitle},
         #{parentId},
         #{replyUserId},
         #{auditStatus}
