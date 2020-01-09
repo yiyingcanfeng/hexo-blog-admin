@@ -69,10 +69,10 @@
         <template slot-scope="scope">
           <router-link
             tag="a"
-            :to="{ path: '/comment/list', query: { searchUsername: scope.row.name,immediateSearch:true }}"
+            :to="{ path: '/comment/list', query: { searchUsername: scope.row.username, immediateSearch:true }}"
           >
             <a>
-              {{ scope.row.name }}
+              {{ scope.row.username }}
             </a>
           </router-link>
         </template>
@@ -90,7 +90,7 @@
       </el-table-column>
       <el-table-column align="center" sortable prop="commentCount" label="评论数" width="90">
         <template slot-scope="scope">
-          <router-link v-if="scope.row.commentCount !== 0" tag="a" :to="{ path: '/comment/list', query: { searchUsername: scope.row.name,immediateSearch:true }}">
+          <router-link v-if="scope.row.commentCount !== 0" tag="a" :to="{ path: '/comment/list', query: { searchUsername: scope.row.username, immediateSearch:true }}">
             <a>
               {{ scope.row.commentCount }}
             </a>

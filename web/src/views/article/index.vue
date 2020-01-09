@@ -86,6 +86,13 @@
           </span>
         </template>
       </el-table-column>
+      <el-table-column align="left" width="200" label="操作">
+        <template slot-scope="scope">
+          <a target="_blank" :href="systemConfig.hexoVisitUrl + scope.row.path">
+            <el-button type="primary" size="medium">文章页面</el-button>
+          </a>
+        </template>
+      </el-table-column>
     </el-table>
     <el-pagination
       class="pagination"
@@ -108,6 +115,16 @@ export default {
     return {
       data: {
         list: []
+      },
+      systemConfig: {
+        articlePath: '',
+        hexoVisitUrl: '',
+        hexoAdminUrl: '',
+        hexoPath: '',
+        publicPath: '',
+        adminMailReport: 0,
+        userMailReport: 0,
+        smtpSender: ''
       },
       listLoading: true,
       generateLoading: false,
@@ -162,8 +179,14 @@ export default {
         },
         data: searchParams
       }).then(response => {
-        this.data = response.data
-        this.listLoading = false
+        request({
+          url: '/system/listSettings',
+          method: 'get'
+        }).then(res => {
+          this.systemConfig = res.data
+          this.data = response.data
+          this.listLoading = false
+        })
       })
     },
     generate() {
@@ -189,6 +212,10 @@ export default {
       }).catch(reason => {
         this.generateLoading = false
       })
+    },
+    jumpToArticlePage(val) {
+      console.log(val)
+      window.open(this.systemConfig.hexoVisitUrl + val.path, '_blank')
     },
     handleSizeChange(val) {
       this.pageSize = val
