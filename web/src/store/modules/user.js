@@ -1,5 +1,5 @@
 import { login, logout, getInfo } from '@/api/user'
-import { getToken, setToken, removeToken, getUsername } from '@/utils/auth'
+import { getToken, setToken, removeToken, getUsername, removeAdminInfo } from '@/utils/auth'
 import { resetRouter } from '@/router'
 
 const state = {
@@ -7,7 +7,8 @@ const state = {
   username: getUsername(),
   nickname: '',
   email: '',
-  avatar: ''
+  avatar: '',
+  roles: []
 }
 
 const mutations = {
@@ -37,7 +38,7 @@ const actions = {
         const { data } = response
         commit('SET_TOKEN', data.token)
         commit('SET_USERNAME', data.username)
-        commit('SET_NICKNAME', data.nickname)
+        // commit('SET_NICKNAME', data.nickname)
         commit('SET_EMAIL', data.email)
         setToken(data.token)
         resolve()
@@ -72,6 +73,7 @@ const actions = {
       logout(state.token).then(() => {
         commit('SET_TOKEN', '')
         removeToken()
+        removeAdminInfo()
         resetRouter()
         resolve()
       }).catch(error => {

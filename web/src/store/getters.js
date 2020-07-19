@@ -1,5 +1,10 @@
 const getters = {
   sidebar: state => state.app.sidebar,
+  language: state => state.app.language,
+  visitedViews: state => state.tagsView.visitedViews,
+  cachedViews: state => state.tagsView.cachedViews,
+  permission_routes: state => state.permission.routes,
+  roles: state => state.user.roles,
   device: state => state.app.device,
   token: state => state.user.token,
   avatar: state => state.user.avatar,

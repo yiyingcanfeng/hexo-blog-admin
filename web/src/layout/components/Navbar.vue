@@ -5,6 +5,7 @@
     <breadcrumb class="breadcrumb-container" />
 
     <div class="right-menu">
+      <lang-select class="right-menu-item hover-effect" />
       <el-dropdown class="avatar-container" trigger="click">
         <div class="avatar-wrapper">
           <img v-if="avatar===''" src="@/assets/avator/default-avator.png" class="user-avatar">
@@ -14,11 +15,11 @@
         <el-dropdown-menu slot="dropdown" class="user-dropdown">
           <router-link to="/">
             <el-dropdown-item>
-              主页
+              {{ $t('navbar.dashboard') }}
             </el-dropdown-item>
           </router-link>
           <el-dropdown-item divided>
-            <span style="display:block;" @click="logout">注销</span>
+            <span style="display:block;" @click="logout">{{ $t('navbar.logOut') }}</span>
           </el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
@@ -30,11 +31,13 @@
 import { mapGetters } from 'vuex'
 import Breadcrumb from '@/components/Breadcrumb'
 import Hamburger from '@/components/Hamburger'
+import LangSelect from '@/components/LangSelect'
 
 export default {
   components: {
     Breadcrumb,
-    Hamburger
+    Hamburger,
+    LangSelect
   },
   computed: {
     ...mapGetters([

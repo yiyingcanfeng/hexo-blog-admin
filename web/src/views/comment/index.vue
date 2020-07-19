@@ -3,41 +3,41 @@
     <div class="search-container">
       <el-dropdown trigger="click">
         <el-button type="primary" size="medium" :loading="batchOperateLoading">
-          批量操作<i class="el-icon-arrow-down el-icon--right"></i>
+          {{ $t('commentManage.commentList.batchOperate') }}<i class="el-icon-arrow-down el-icon--right"></i>
         </el-button>
         <el-dropdown-menu slot="dropdown">
-          <el-dropdown-item @click.native="deleteBatch">批量删除</el-dropdown-item>
-          <el-dropdown-item @click.native="passAuditBatch">通过审核</el-dropdown-item>
-          <el-dropdown-item @click.native="cancelAuditBatch">取消审核</el-dropdown-item>
+          <el-dropdown-item @click.native="deleteBatch">{{ $t('commentManage.commentList.deleteBatch') }}</el-dropdown-item>
+          <el-dropdown-item @click.native="passAuditBatch">{{ $t('commentManage.commentList.passAuditBatch') }}</el-dropdown-item>
+          <el-dropdown-item @click.native="cancelAuditBatch">{{ $t('commentManage.commentList.cancelAuditBatch') }}</el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
       <el-input
         v-model="searchForm.searchUsername"
-        placeholder="请输入用户名"
+        :placeholder="$t('commentManage.commentList.searchUsername')"
         clearable
         size="medium"
         type="text"
-        style="width: 10%"
+        style="width: 15%;margin-left: 5px;"
         @keyup.native="enterSearch(searchForm.searchUsername,$event)"
         @clear="fetchData(currentPage,pageSize,searchForm)"
       />
       <el-input
         v-model="searchForm.searchTitle"
-        placeholder="请输入文章标题"
+        :placeholder="$t('commentManage.commentList.searchTitle')"
         clearable
         size="medium"
         type="text"
-        style="width: 20%"
+        style="width: 20%;margin-left: 5px;"
         @keyup.native="enterSearch(searchForm.searchTitle,$event)"
         @clear="fetchData(currentPage,pageSize,searchForm)"
       />
       <el-input
         v-model="searchForm.searchComment"
-        placeholder="请输入评论内容"
+        :placeholder="$t('commentManage.commentList.searchComment')"
         clearable
         size="medium"
         type="text"
-        style="width: 20%"
+        style="width: 20%;margin-left: 5px;"
         @keyup.native="enterSearch(searchForm.searchComment,$event)"
         @clear="fetchData(currentPage,pageSize,searchForm)"
       />
@@ -47,17 +47,19 @@
         type="datetimerange"
         value-format="yyyy-MM-dd HH:mm:ss"
         :picker-options="pickerOptions"
-        range-separator="至"
-        start-placeholder="开始日期"
-        end-placeholder="结束日期"
+        :range-separator="$t('commentManage.commentList.searchDatetimeTo')"
+        :start-placeholder="$t('commentManage.commentList.searchDatetimeStart')"
+        :end-placeholder="$t('commentManage.commentList.searchDatetimeEnd')"
         align="right"
         clearable
+        style="margin-left: 5px;"
         @clear="fetchData(currentPage,pageSize,searchForm)"
       />
       <el-button
         type="primary"
         size="small"
         icon="el-icon-search"
+        style="margin-left: 5px;"
         @click="searchComment"
       />
     </div>
@@ -76,22 +78,22 @@
         type="selection"
         width="40"
       />
-      <el-table-column align="center" label="序号" width="65">
+      <el-table-column align="center" :label="$t('commentManage.commentList.table.number.columnName')" width="65">
         <template slot-scope="scope">
           {{ scope.$index+1 }}
         </template>
       </el-table-column>
-      <el-table-column align="left" label="用户名" sortable prop="username" width="90">
+      <el-table-column align="left" :label="$t('commentManage.commentList.table.username.columnName')" sortable prop="username" :width="$t('commentManage.commentList.table.username.width')">
         <template slot-scope="scope">
           {{ scope.row.username }}
         </template>
       </el-table-column>
-      <el-table-column align="left" label="回复的人" width="95">
+      <el-table-column align="left" :label="$t('commentManage.commentList.table.replyUsername.columnName')" :width="$t('commentManage.commentList.table.replyUsername.width')">
         <template slot-scope="scope">
           {{ scope.row.replyUserName }}
         </template>
       </el-table-column>
-      <el-table-column align="left" label="评论时间" sortable prop="createTime" width="175">
+      <el-table-column align="left" :label="$t('commentManage.commentList.table.createTime.columnName')" sortable prop="createTime" :width="$t('commentManage.commentList.table.createTime.width')">
         <template slot-scope="scope">
           {{ scope.row.createTime }}
         </template>
@@ -99,7 +101,7 @@
       <el-table-column
         align="left"
         sortable
-        label="文章"
+        :label="$t('commentManage.commentList.table.articleTitle.columnName')"
         :filters="titleFilterArray"
         :filter-method="titleFilter"
         filter-placement="bottom-end"
@@ -108,23 +110,23 @@
           {{ scope.row.articleTitle }}
         </template>
       </el-table-column>
-      <el-table-column align="left" label="评论内容">
+      <el-table-column align="left" :label="$t('commentManage.commentList.table.content.columnName')">
         <template slot-scope="scope">
           {{ scope.row.content }}
         </template>
       </el-table-column>
-      <el-table-column align="center" label="审核状态" width="90">
+      <el-table-column align="center" :label="$t('commentManage.commentList.table.auditStatus.columnName')" :width="$t('commentManage.commentList.table.auditStatus.width')">
         <template slot-scope="scope">
-          <el-tag v-if="scope.row.auditStatus===auditStatus.AUDIT_SUCCESS" type="success">通过</el-tag>
-          <el-tag v-if="scope.row.auditStatus===auditStatus.WAIT_AUDIT" type="danger">未通过</el-tag>
+          <el-tag v-if="scope.row.auditStatus===auditStatus.AUDIT_SUCCESS" type="success">{{ $t('commentManage.commentList.table.auditSuccess') }}</el-tag>
+          <el-tag v-if="scope.row.auditStatus===auditStatus.WAIT_AUDIT" type="danger">{{ $t('commentManage.commentList.table.waitAudit') }}</el-tag>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="操作" width="300">
+      <el-table-column align="center" :label="$t('commentManage.commentList.table.operate.columnName')" :width="$t('commentManage.commentList.table.operate.width')">
         <template slot-scope="scope">
-          <el-button v-if="scope.row.auditStatus===auditStatus.AUDIT_SUCCESS" type="danger" :loading="operateLoading" @click="cancelAudit(scope.row.id)">取消审核</el-button>
-          <el-button v-if="scope.row.auditStatus===auditStatus.WAIT_AUDIT" type="success" :loading="operateLoading" @click="passAudit(scope.row.id)">通过审核</el-button>
-          <el-button type="danger" @click="deleteComment(scope.row.id)">删除</el-button>
-          <el-button type="primary" @click="replyCommentDialogShow(scope.row)">回复</el-button>
+          <el-button v-if="scope.row.auditStatus===auditStatus.AUDIT_SUCCESS" size="small" type="danger" :loading="operateLoading" @click="cancelAudit(scope.row.id)">{{ $t('commentManage.commentList.table.operate.cancelAudit') }}</el-button>
+          <el-button v-if="scope.row.auditStatus===auditStatus.WAIT_AUDIT" size="small" type="success" :loading="operateLoading" @click="passAudit(scope.row.id)">{{ $t('commentManage.commentList.table.operate.passAudit') }}</el-button>
+          <el-button size="small" type="danger" @click="deleteComment(scope.row.id)">{{ $t('commentManage.commentList.table.operate.deleteComment') }}</el-button>
+          <el-button size="small" type="primary" @click="replyCommentDialogShow(scope.row)">{{ $t('commentManage.commentList.table.operate.reply') }}</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -142,7 +144,7 @@
     <el-dialog
       v-dialogDrag
       width="35%"
-      title="回复评论"
+      :title="$t('commentManage.replyCommentDialog.title')"
       :visible.sync="replyCommentDialogVisible"
       @close="replyCommentDialogClose"
     >
@@ -150,32 +152,32 @@
         label-position="right"
         label-width="100px"
       >
-        <el-form-item label="邮箱地址">
+        <el-form-item :label="$t('commentManage.replyCommentDialog.userMail')">
           <el-input
             v-model="replyCommentForm.userMail"
-            placeholder="默认为smtp发信邮箱"
+            :placeholder="$t('commentManage.replyCommentDialog.userMailPlaceholder')"
             size="small"
             clearable
           />
         </el-form-item>
-        <el-form-item label="用户名">
+        <el-form-item :label="$t('commentManage.replyCommentDialog.username')">
           <el-input
             v-model="replyCommentForm.username"
-            placeholder="请填写用户名"
+            :placeholder="$t('commentManage.replyCommentDialog.usernamePlaceholder')"
             size="small"
             clearable
           ></el-input>
         </el-form-item>
-        <el-form-item label="回复内容">
+        <el-form-item :label="$t('commentManage.replyCommentDialog.content')">
           <el-input
             v-model="replyCommentForm.content"
-            placeholder="请填写回复内容"
+            :placeholder="$t('commentManage.replyCommentDialog.contentPlaceholder')"
             size="small"
             clearable
           />
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" :loading="replyCommentOperateLoading" @click="replyComment">回复</el-button>
+          <el-button type="primary" :loading="replyCommentOperateLoading" @click="replyComment">{{ $t('commentManage.replyCommentDialog.reply') }}</el-button>
         </el-form-item>
       </el-form>
     </el-dialog>
@@ -226,7 +228,7 @@ export default {
       multipleSelection: [],
       pickerOptions: {
         shortcuts: [{
-          text: '最近一周',
+          text: this.$t('pickerOptions.recentWeek'),
           onClick(picker) {
             const end = new Date()
             const start = new Date()
@@ -234,7 +236,7 @@ export default {
             picker.$emit('pick', [start, end])
           }
         }, {
-          text: '最近一个月',
+          text: this.$t('pickerOptions.recentMonth'),
           onClick(picker) {
             const end = new Date()
             const start = new Date()
@@ -242,7 +244,7 @@ export default {
             picker.$emit('pick', [start, end])
           }
         }, {
-          text: '最近三个月',
+          text: this.$t('pickerOptions.recentThreeMonth'),
           onClick(picker) {
             const end = new Date()
             const start = new Date()
@@ -332,9 +334,9 @@ export default {
       })
     },
     deleteComment(id) {
-      this.$confirm('确认删除？', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
+      this.$confirm(this.$t('deleteConfirm.title'), this.$t('deleteConfirm.message'), {
+        confirmButtonText: this.$t('deleteConfirm.confirm'),
+        cancelButtonText: this.$t('deleteConfirm.cancel'),
         type: 'warning'
       }).then(_ => {
         request({
@@ -368,7 +370,7 @@ export default {
         method: 'post',
         data: this.replyCommentForm
       }).then(response => {
-        this.$uiUtils.showSuccessMessage('操作成功！')
+        this.$uiUtils.showSuccessMessage(this.$t('commentManage.message.operate'))
         this.fetchData(this.currentPage, this.pageSize)
         this.replyCommentOperateLoading = false
         this.replyCommentDialogVisible = false
@@ -411,7 +413,7 @@ export default {
     passAuditBatch() {
       if (this.multipleSelection.length === 0) {
         this.$message({
-          message: '请选择要操作的数据！',
+          message: this.$t('commentManage.message.chooseData'),
           type: 'error',
           duration: 3 * 1000,
           showClose: true
@@ -431,16 +433,16 @@ export default {
       }
       if (sendData.length === 0) {
         this.$message({
-          message: '没有需要审核通过的评论！',
+          message: this.$t('commentManage.message.noCommentNeedAudit'),
           type: 'error',
           duration: 3 * 1000,
           showClose: true
         })
         return
       }
-      this.$confirm('确认操作？', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
+      this.$confirm(this.$t('operateConfirm.title'), this.$t('operateConfirm.message'), {
+        confirmButtonText: this.$t('operateConfirm.confirm'),
+        cancelButtonText: this.$t('operateConfirm.cancel'),
         type: 'warning'
       }).then(_ => {
         this.batchOperateLoading = true
@@ -465,7 +467,7 @@ export default {
     cancelAuditBatch() {
       if (this.multipleSelection.length === 0) {
         this.$message({
-          message: '请选择要操作的数据！',
+          message: this.$t('commentManage.message.chooseData'),
           type: 'error',
           duration: 3 * 1000,
           showClose: true
@@ -485,16 +487,16 @@ export default {
       }
       if (sendData.length === 0) {
         this.$message({
-          message: '没有需要取消审核的评论！',
+          message: this.$t('commentManage.message.noCommentNeedCancelAudit'),
           type: 'error',
           duration: 3 * 1000,
           showClose: true
         })
         return
       }
-      this.$confirm('确认操作？', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
+      this.$confirm(this.$t('operateConfirm.title'), this.$t('operateConfirm.message'), {
+        confirmButtonText: this.$t('operateConfirm.confirm'),
+        cancelButtonText: this.$t('operateConfirm.cancel'),
         type: 'warning'
       }).then(_ => {
         this.batchOperateLoading = true
@@ -519,16 +521,16 @@ export default {
     deleteBatch() {
       if (this.multipleSelection.length === 0) {
         this.$message({
-          message: '请选择要删除的数据！',
+          message: this.$t('commentManage.message.chooseDataDelete'),
           type: 'error',
           duration: 3 * 1000,
           showClose: true
         })
         return
       }
-      this.$confirm('确认删除？', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
+      this.$confirm(this.$t('deleteConfirm.title'), this.$t('deleteConfirm.message'), {
+        confirmButtonText: this.$t('deleteConfirm.confirm'),
+        cancelButtonText: this.$t('deleteConfirm.cancel'),
         type: 'warning'
       }).then(_ => {
         this.batchOperateLoading = true

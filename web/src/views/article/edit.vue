@@ -1,19 +1,19 @@
 <template>
   <div class="app-container">
     <router-link :to="{ path: '/article/list' }">
-      <el-button>返回</el-button>
+      <el-button>{{ $t('articleManage.editArticle.goBack') }}</el-button>
     </router-link>
-    <el-button type="primary" class="save-button" @click="saveArticle">保存</el-button>
-    <el-button type="primary" :loading="generateLoading" @click="generate">生成</el-button>
-    <el-button type="primary" @click="modifyTitle">修改标题</el-button>
-    <el-button type="danger" @click="deleteArticle">删除</el-button>
+    <el-button type="primary" class="save-button" @click="saveArticle">{{ $t('articleManage.editArticle.save') }}</el-button>
+    <el-button type="primary" :loading="generateLoading" @click="generate">{{ $t('articleManage.editArticle.generate') }}</el-button>
+    <el-button type="primary" @click="modifyTitle">{{ $t('articleManage.editArticle.modifyTitle') }}</el-button>
+    <el-button type="danger" @click="deleteArticle">{{ $t('articleManage.editArticle.deleteArticle') }}</el-button>
     <br>
     <el-form label-position="right" label-width="60px" style="margin-top: 10px;">
-      <el-form-item label="标题:">
+      <el-form-item :label="$t('articleManage.editArticle.title')">
         <span :style="`display: ${titleSpanDisplay};font-size: 18px;`">{{ title }}</span>
         <el-input
           v-model="title"
-          placeholder="标题"
+          :placeholder="$t('articleManage.editArticle.title')"
           :style="`display: ${titleInputDisplay};`"
         />
       </el-form-item>
@@ -25,8 +25,8 @@
       :before-close="handleClose"
     >
       <span slot="footer" class="dialog-footer">
-        <el-button @click="dialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
+        <el-button @click="dialogVisible = false">{{ $t('articleManage.editArticle.deleteDialog.cancel') }}</el-button>
+        <el-button type="primary" @click="dialogVisible = false">{{ $t('articleManage.editArticle.deleteDialog.confirm') }}</el-button>
       </span>
     </el-dialog>
   </div>
@@ -93,7 +93,7 @@ export default {
     generate() {
       this.generateLoading = true
       this.$message({
-        message: '正在生成中...',
+        message: this.$t('articleManage.editArticle.generating'),
         type: 'info',
         duration: 3 * 1000
       })
@@ -118,9 +118,9 @@ export default {
       this.titleSpanDisplay = 'none'
     },
     deleteArticle() {
-      this.$confirm('确认删除？', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
+      this.$confirm(this.$t('articleManage.editArticle.deleteDialog.title'), this.$t('articleManage.editArticle.deleteDialog.message'), {
+        confirmButtonText: this.$t('articleManage.editArticle.deleteDialog.confirm'),
+        cancelButtonText: this.$t('articleManage.editArticle.deleteDialog.cancel'),
         type: 'warning'
       }).then(_ => {
         request({

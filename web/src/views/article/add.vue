@@ -1,15 +1,15 @@
 <template>
   <div class="app-container">
     <router-link :to="{ path: '/article/list' }">
-      <el-button>返回</el-button>
+      <el-button>{{ $t('articleManage.addArticle.goBack') }}</el-button>
     </router-link>
-    <el-button type="primary" class="save-button" @click="addArticle">保存</el-button>
+    <el-button type="primary" class="save-button" style="margin-left: 5px;" @click="addArticle">{{ $t('articleManage.addArticle.save') }}</el-button>
     <br>
     <el-form label-position="right" label-width="60px" style="margin-top: 10px;">
-      <el-form-item label="标题:">
+      <el-form-item :label="$t('articleManage.addArticle.title')">
         <el-input
           v-model="title"
-          placeholder="标题"
+          :placeholder="$t('articleManage.addArticle.title')"
         />
       </el-form-item>
     </el-form>

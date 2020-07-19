@@ -3,39 +3,39 @@
     <div class="search-container">
       <el-dropdown trigger="click">
         <el-button type="primary" size="medium" :loading="batchOperateLoading">
-          批量操作<i class="el-icon-arrow-down el-icon--right"></i>
+          {{ $t('userManage.userList.batchOperate') }}<i class="el-icon-arrow-down el-icon--right"></i>
         </el-button>
         <el-dropdown-menu slot="dropdown">
-          <el-dropdown-item @click.native="deleteBatch">批量删除</el-dropdown-item>
+          <el-dropdown-item @click.native="deleteBatch">{{ $t('userManage.userList.deleteBatch') }}</el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
       <el-input
         v-model="searchForm.searchUsername"
-        placeholder="请输入用户名"
+        :placeholder="$t('userManage.userList.searchUsername')"
         clearable
         size="medium"
         type="text"
-        style="width: 10%"
+        style="width: 15%;margin-left: 5px;"
         @keyup.native="enterSearch(searchForm.searchUsername,$event)"
         @clear="fetchData(currentPage,pageSize,searchForm)"
       />
       <el-input
         v-model="searchForm.searchEmail"
-        placeholder="请输入邮箱"
+        :placeholder="$t('userManage.userList.searchEmail')"
         clearable
         size="medium"
         type="text"
-        style="width: 10%"
+        style="width: 15%;margin-left: 5px;"
         @keyup.native="enterSearch(searchForm.searchEmail,$event)"
         @clear="fetchData(currentPage,pageSize,searchForm)"
       />
       <el-input
         v-model="searchForm.searchCommentCount"
-        placeholder="请输入评论数"
+        :placeholder="$t('userManage.userList.searchCommentCount')"
         clearable
         size="medium"
-        type="text"
-        style="width: 8%"
+        type="number"
+        style="width: 18%;margin-left: 5px;"
         @keyup.native="enterSearch(searchForm.searchCommentCount,$event)"
         @clear="fetchData(currentPage,pageSize,searchForm)"
       />
@@ -43,6 +43,7 @@
         type="primary"
         size="small"
         icon="el-icon-search"
+        style="margin-left: 5px;"
         @click="searchComment"
       />
     </div>
@@ -60,12 +61,12 @@
         type="selection"
         width="40"
       />
-      <el-table-column align="center" label="序号" width="50">
+      <el-table-column align="center" :label="$t('userManage.userList.table.number.columnName')" width="50">
         <template slot-scope="scope">
           {{ scope.$index+1 }}
         </template>
       </el-table-column>
-      <el-table-column align="left" label="用户名">
+      <el-table-column align="left" :label="$t('userManage.userList.table.username.columnName')">
         <template slot-scope="scope">
           <router-link
             tag="a"
@@ -77,18 +78,18 @@
           </router-link>
         </template>
       </el-table-column>
-      <el-table-column align="left" label="邮箱">
+      <el-table-column align="left" :label="$t('userManage.userList.table.email.columnName')">
         <template slot-scope="scope">
           <a :href="'mailto://'+scope.row.email">{{ scope.row.email }}</a>
         </template>
       </el-table-column>
-      <el-table-column align="left" label="网站">
+      <el-table-column align="left" :label="$t('userManage.userList.table.website.columnName')">
         <template slot-scope="scope">
           <a v-if="scope.row.website!==''" :href="'//'+scope.row.website">{{ scope.row.website }}</a>
           <span v-else>{{ scope.row.website }}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" sortable prop="commentCount" label="评论数" width="90">
+      <el-table-column align="center" sortable prop="commentCount" :label="$t('userManage.userList.table.commentCount.columnName')" :width="$t('userManage.userList.table.commentCount.width')">
         <template slot-scope="scope">
           <router-link v-if="scope.row.commentCount !== 0" tag="a" :to="{ path: '/comment/list', query: { searchUsername: scope.row.username, immediateSearch:true }}">
             <a>
@@ -100,9 +101,9 @@
           </span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="操作" width="175">
+      <el-table-column align="center" :label="$t('userManage.userList.table.operate.columnName')" :width="$t('userManage.userList.table.operate.width')">
         <template slot-scope="scope">
-          <el-button type="danger" :loading="operateLoading" @click="deleteUser(scope.row.id)">删除</el-button>
+          <el-button type="danger" :loading="operateLoading" @click="deleteUser(scope.row.id)">{{ $t('userManage.userList.table.operate.deleteUser') }}</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -162,9 +163,9 @@ export default {
       })
     },
     deleteUser(id) {
-      this.$confirm('该用户相关的评论数据也将一并删除，是否确认操作？', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
+      this.$confirm(this.$t('userManage.message.deleteConfirmMessage'), this.$t('userManage.message.deleteConfirmMessageTitle'), {
+        confirmButtonText: this.$t('userManage.message.confirm'),
+        cancelButtonText: this.$t('userManage.message.cancel'),
         type: 'warning'
       }).then(() => {
         this.operateLoading = true
@@ -189,16 +190,16 @@ export default {
     deleteBatch() {
       if (this.multipleSelection.length === 0) {
         this.$message({
-          message: '请选择要删除的数据！',
+          message: this.$t('userManage.message.chooseDataDelete'),
           type: 'error',
           duration: 3 * 1000,
           showClose: true
         })
         return
       }
-      this.$confirm('用户相关的评论数据也将一并删除，是否确认操作？？', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
+      this.$confirm(this.$t('userManage.message.deleteConfirmMessage'), this.$t('userManage.message.deleteConfirmMessageTitle'), {
+        confirmButtonText: this.$t('userManage.message.confirm'),
+        cancelButtonText: this.$t('userManage.message.cancel'),
         type: 'warning'
       }).then(_ => {
         this.batchOperateLoading = true

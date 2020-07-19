@@ -26,3 +26,7 @@ export function setAdminInfo(adminInfo) {
 export function getAdminInfo() {
   return Cookies.get(adminInfoKey) ? JSON.parse(Cookies.get(adminInfoKey)) : {}
 }
+
+export function removeAdminInfo() {
+  return Cookies.remove(adminInfoKey)
+}

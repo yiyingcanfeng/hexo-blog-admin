@@ -2,26 +2,26 @@
   <div class="app-container">
     <div class="container-head-button">
       <router-link :to="{ path: '/article/add' }">
-        <el-button size="medium" type="primary">写文章</el-button>
+        <el-button size="medium" type="primary">{{ $t('articleManage.articleList.addArticle') }}</el-button>
       </router-link>
-      <el-button size="medium" type="primary" :loading="generateLoading" @click="generate">生成</el-button>
+      <el-button size="medium" type="primary" :loading="generateLoading" style="margin-left: 5px;" @click="generate">{{ $t('articleManage.articleList.generate') }}</el-button>
       <el-input
         v-model="searchForm.searchTitle"
-        placeholder="请输入文章标题"
+        :placeholder="$t('articleManage.articleList.searchByTitle')"
         clearable
         size="medium"
         type="text"
-        style="width: 20%"
+        style="width: 20%;margin-left: 5px;"
         @keyup.native="enterSearch(searchForm.searchTitle,$event)"
         @clear="fetchData(currentPage,pageSize,searchForm)"
       />
       <el-input
         v-model="searchForm.searchCommentCount"
-        placeholder="请输入评论数"
+        :placeholder="$t('articleManage.articleList.searchByCommentCount')"
         clearable
         size="medium"
         type="text"
-        style="width: 10%"
+        style="width: 20%;margin-left: 5px;"
         @keyup.native="enterSearch(searchForm.searchCommentCount,$event)"
         @clear="fetchData(currentPage,pageSize,searchForm)"
       />
@@ -31,11 +31,12 @@
         type="datetimerange"
         value-format="yyyy-MM-dd HH:mm:ss"
         :picker-options="pickerOptions"
-        range-separator="至"
-        start-placeholder="开始日期"
-        end-placeholder="结束日期"
+        :range-separator="$t('articleManage.articleList.searchByDateTo')"
+        :start-placeholder="$t('articleManage.articleList.searchByDateStart')"
+        :end-placeholder="$t('articleManage.articleList.searchByDateEnd')"
         align="right"
         clearable
+        style="margin-left: 5px;"
         @clear="fetchData(currentPage,pageSize,searchForm)"
       />
       <el-button
@@ -55,12 +56,12 @@
       :default-sort="{prop: 'createTime', order: 'descending'}"
       style="width: 75%"
     >
-      <el-table-column align="center" label="序号" width="50">
+      <el-table-column align="center" :label="$t('articleManage.articleList.table.number.columnName')" :width="$t('articleManage.articleList.table.number.width')">
         <template slot-scope="scope">
           {{ scope.$index+1 }}
         </template>
       </el-table-column>
-      <el-table-column align="left" sortable prop="title" label="标题">
+      <el-table-column align="left" sortable prop="title" :label="$t('articleManage.articleList.table.title.columnName')">
         <template slot-scope="scope">
           <router-link tag="a" :to="{ path: '/article/edit', query: { title: scope.row.title }}">
             <a>
@@ -69,12 +70,12 @@
           </router-link>
         </template>
       </el-table-column>
-      <el-table-column align="center" sortable prop="createTime" label="创建时间" width="200">
+      <el-table-column align="center" sortable prop="createTime" :label="$t('articleManage.articleList.table.createTime.columnName')" :width="$t('articleManage.articleList.table.createTime.width')">
         <template slot-scope="scope">
           {{ scope.row.createTime }}
         </template>
       </el-table-column>
-      <el-table-column align="center" sortable prop="commentCount" label="评论数" width="90">
+      <el-table-column align="center" sortable prop="commentCount" :label="$t('articleManage.articleList.table.commentCount.columnName')" :width="$t('articleManage.articleList.table.commentCount.width')">
         <template slot-scope="scope">
           <router-link v-if="scope.row.commentCount !== 0" tag="a" :to="{ path: '/comment/list', query: { searchTitle: scope.row.title,immediateSearch:true }}">
             <a>
@@ -86,10 +87,10 @@
           </span>
         </template>
       </el-table-column>
-      <el-table-column align="left" width="200" label="操作">
+      <el-table-column align="left" :width="$t('articleManage.articleList.table.operate.width')" :label="$t('articleManage.articleList.table.operate.columnName')">
         <template slot-scope="scope">
           <a target="_blank" :href="systemConfig.hexoVisitUrl + scope.row.path">
-            <el-button type="primary" size="medium">文章页面</el-button>
+            <el-button type="primary" size="medium">{{ $t('articleManage.articleList.table.articlePage') }}</el-button>
           </a>
         </template>
       </el-table-column>
@@ -137,7 +138,7 @@ export default {
       },
       pickerOptions: {
         shortcuts: [{
-          text: '最近一周',
+          text: this.$t('pickerOptions.recentWeek'),
           onClick(picker) {
             const end = new Date()
             const start = new Date()
@@ -145,7 +146,7 @@ export default {
             picker.$emit('pick', [start, end])
           }
         }, {
-          text: '最近一个月',
+          text: this.$t('pickerOptions.recentMonth'),
           onClick(picker) {
             const end = new Date()
             const start = new Date()
@@ -153,7 +154,7 @@ export default {
             picker.$emit('pick', [start, end])
           }
         }, {
-          text: '最近三个月',
+          text: this.$t('pickerOptions.recentThreeMonth'),
           onClick(picker) {
             const end = new Date()
             const start = new Date()

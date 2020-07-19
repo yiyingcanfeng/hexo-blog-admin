@@ -15,6 +15,20 @@ const name = defaultSettings.title || 'vue Admin Template' // page title
 // port = 9528 npm run dev OR npm run dev --port = 9528
 const port = process.env.port || process.env.npm_config_port || 9528 // dev port
 // All configuration item explanations can be find in https://cli.vuejs.org/config/
+const isProduction = process.env.NODE_ENV === 'production'
+const cdn = {
+  css: [
+    'https://cdn.staticfile.org/element-ui/2.13.2/theme-chalk/index.css'
+  ],
+  js: [
+    'https://cdn.staticfile.org/vue/2.6.11/vue.runtime.min.js',
+    'https://cdn.staticfile.org/vuex/3.2.0/vuex.min.js',
+    'https://cdn.staticfile.org/vue-router/3.2.0/vue-router.min.js',
+    'https://cdn.staticfile.org/element-ui/2.13.2/index.js',
+    'https://cdn.staticfile.org/moment.js/2.27.0/moment.min.js',
+    'https://cdn.staticfile.org/moment.js/2.27.0/locale/zh-cn.js'
+  ]
+}
 module.exports = {
   /**
    * You will need to set publicPath if you plan to deploy your site under a sub path,
@@ -46,29 +60,32 @@ module.exports = {
           ['^' + process.env.VUE_APP_BASE_API]: ''
         }
       }
-    },
-    after: require('./mock/mock-server.js')
+    }
   },
-  configureWebpack: {
+  configureWebpack: (config) => {
     // provide the app's title in webpack's name field, so that
     // it can be accessed in index.html to inject the correct title.
-    name: name,
-    resolve: {
-      alias: {
-        '@': resolve('src')
+    config.name = name
+    if (isProduction) {
+      config.externals = {
+        vue: 'Vue',
+        vuex: 'Vuex',
+        'vue-router': 'VueRouter',
+        'element-ui': 'ELEMENT',
+        'moment': 'moment'
       }
-    },
-    externals: {
-      vue: 'Vue',
-      vuex: 'Vuex',
-      'vue-router': 'VueRouter',
-      'element-ui': 'ELEMENT'
     }
+    config.devtool = 'source-map'
   },
   chainWebpack(config) {
     config.plugins.delete('preload') // TODO: need test
     config.plugins.delete('prefetch') // TODO: need test
-
+    if (isProduction) {
+      config.plugin('html').tap(args => {
+        args[0].cdn = cdn
+        return args
+      })
+    }
     // set svg-sprite-loader
     config.module
       .rule('svg')
