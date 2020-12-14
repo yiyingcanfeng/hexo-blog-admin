@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<configuration status="debug">
+<configuration status="info">
     <!--以java -jar xxx.jar启动时指定外部log4j2.xml的方式：java -jar  -Dlogging.config=/xxx/xxx/log4j2.xml  xxx.jar-->
     <Properties>
         <property name="LOG_PATH">logs</property>
@@ -55,11 +55,11 @@
     <!-- 然后定义logger，只有定义了logger并引入的appender，appender才会生效 -->
     <loggers>
         <!-- 建立一个默认的root的logger -->
-        <root level="info">
+        <root level="debug">
             <appender-ref ref="Console"/>
             <!-- <appender-ref ref="log"/> -->
             <!-- <appender-ref ref="DEBUG"/> -->
-            <!--<appender-ref ref="INFO"/>-->
+            <appender-ref ref="INFO"/>
             <!--<appender-ref ref="WARNING"/>-->
             <!--<appender-ref ref="ERROR"/>-->
             <!--<appender-ref ref="RollingFile"/>-->

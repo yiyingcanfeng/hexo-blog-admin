@@ -304,7 +304,7 @@ public class ArticleService {
      */
     public String recordVisitInfo() {
         String referer = request.getHeader("referer");
-        String remoteAddr = request.getRemoteAddr();
+        String remoteAddr = "127.0.0.1".equals(request.getRemoteAddr()) ? request.getHeader("x-real-ip") : request.getRemoteAddr();
         int remotePort = request.getRemotePort();
         VisitRecord visitRecord = new VisitRecord()
                 .setVisitTime(new Date())

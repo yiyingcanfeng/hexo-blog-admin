@@ -101,7 +101,7 @@ public class AdminController {
                         FindByIndexNameSessionRepository.PRINCIPAL_NAME_INDEX_NAME, "admin");
                 response.addHeader("jsessionid", EncryptUtils.base64Encode(session.getId()));
                 //session有效期：1小时
-                session.setMaxInactiveInterval(60 * 60);
+                session.setMaxInactiveInterval(72 * 60 * 60);
                 return new Result<>(Result.Code.SUCCESS, map);
             } else {
                 return new Result<>(Result.Code.LOGIN_INFO_INCORRECT, "用户名或密码错误！");
