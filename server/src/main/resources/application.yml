@@ -35,7 +35,6 @@ spring:
         allow: 127.0.0.1
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss
-    joda-date-time-format: yyyy-MM-dd HH:mm:ss
     time-zone: GMT+8
   servlet:
     multipart:
@@ -66,9 +65,9 @@ spring:
             required: true
           ssl:
             enable: true
-
-  resources:
-    static-locations: file:./static/
+  web:
+    resources:
+      static-locations: file:./static/
 mybatis:
   mapper-locations: classpath:/mybatis-mappers/*
   configuration:

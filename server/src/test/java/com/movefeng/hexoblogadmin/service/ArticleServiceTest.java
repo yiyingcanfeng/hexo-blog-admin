@@ -8,26 +8,21 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.FileFilterUtils;
 import org.apache.commons.lang3.time.FastDateFormat;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-
 import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.*;
 
-import static org.junit.Assert.*;
 
 /**
  * @author z
  */
-@RunWith(SpringRunner.class)
 @SpringBootTest
 @Slf4j
 public class ArticleServiceTest {
